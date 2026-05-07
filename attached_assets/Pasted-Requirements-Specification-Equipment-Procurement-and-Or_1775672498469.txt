@@ -1,0 +1,98 @@
+Requirements Specification: Equipment Procurement and Order Management System
+
+1. Project Overview and Objectives
+
+The objective of this project is to implement a centralised "Online Procurement Tool" for the Telangana State Medical Services and Infrastructure Development Corporation (TGMSIDC). This system will replace the current manual, paper-based, and Excel-dependent tracking methods which currently lead to lost indents and a lack of visibility across the procurement lifecycle.
+
+The system is designed to digitise the end-to-end medical equipment procurement process, from the receipt of paper indents to final delivery and quality acceptance. The primary objectives are:
+
+* Order Management: A robust digital workflow to manage indent digitisation, approvals, rate contract linking, and purchase order issuance.
+* Supply Chain Track and Trace: A QR code-based tracking system to provide end-to-end visibility of goods throughout the supply chain, ensuring accountability and quality at the point of delivery.
+
+2. System Actors and Roles
+
+Role	Responsibilities
+Head of Departments (HODs) / Medical Facilities	Originate equipment requirements via paper-based indents and submit them to TGMSIDC for processing.
+General Manager (GM) – Equipment	Primary approver within the tool; reviews, approves, or rejects digitised indents and selects the Procurement Mode (Rate Contract vs. Tender).
+TGMSIDC Personnel (Data Entry)	Responsible for the manual digitisation of paper indents into the system and updating tender milestones for external processes.
+Hospital Superintendents	Conduct on-site equipment verification, check quality against agreed specifications, and issue digital acceptance certificates.
+Suppliers / Vendors	Use the portal to receive Purchase Orders (POs), provide shipping updates, and upload mandatory quality/accreditation documents.
+Special Officer (Equipment)	Provides high-level oversight of the procurement process, performance monitoring, and final validation.
+
+3. Master Data Management
+
+The system relies on a centralised Master Data architecture to ensure consistency and prevent the variability issues currently plaguing manual procurement.
+
+3.1 Equipment Master and Specification Library
+
+The system must establish a standardised Equipment Master to eliminate specification drift between different departments or medical facilities.
+
+* Specification Library: The tool must maintain a library of standardised technical specifications. For example, specifications for simple items like BP apparatus and thermometers will be fixed, while complex machinery like CT scans, MR scans, and ventilators will have detailed, version-controlled specification sets.
+* Standardisation Logic: Once a specification is finalised for a particular equipment type, it becomes the default template for all subsequent requests to ensure uniformity across the corporation.
+
+3.2 Supplementary Masters
+
+* Institutions Master: A complete registry of all medical facilities, hospitals, and Primary Health Centres (PHCs).
+* Vendor Master: A database of all registered suppliers, including historical performance and L1 bidder status.
+* Account Heads & Programmes: Financial mapping of equipment to specific budgetary heads and government health programmes.
+* Tax Master: Pre-configured GST rates specifically including 5%, 12%, and 18% tiers.
+
+4. End-to-End Procurement Workflow
+
+4.1 Indent Receipt and Processing
+
+1. Receipt: Indents are received as physical, signed paper documents from HODs or facilities.
+2. Digitisation: TGMSIDC personnel enter the indent details into the tool. Mandatory fields include requesting facility, equipment category, quantity, and specific technical requirements.
+3. Approval Flow: The digitised indent is routed to the GM (Equipment). The GM must select the "Procurement Mode" as the critical decision point for the workflow.
+
+4.2 Procurement Mode Determination and RC Management
+
+The workflow forks based on the availability of a valid Rate Contract (RC):
+
+* Path A (Existing Rate Contract): If a valid RC exists for the requested equipment, the system links the indent directly to the contract and proceeds to PO issuance.
+* Path B (External Tendering): If no RC exists, the system flags the indent for tendering.
+  * External Tracking: Since the Government e-Procurement platform does not allow API integration, the tool acts as a tracking layer. Users must manually update milestones: Tender Invited, Bids Received, and L1 Bidder Identified.
+  * RC Creation (Bridge): The outcome of a successful tender must result in the creation of a new Rate Contract within the tool. No PO can be issued for Path B until the RC is finalised.
+  * Data Capture: New RCs must record L1 Bidder details, unit price, GST, warranty terms, and specifically, CMC (Comprehensive Maintenance Contract) charges applicable after X years.
+* RC Lifecycle Management: The system must provide functionality to monitor RC expiry dates, facilitate renewals, amend terms, or close contracts as per Sheet 4 of the Procurement Process Book.
+
+4.3 Purchase Order (PO) Management
+
+* Generation: POs are generated from approved indents linked to active RCs.
+* Approval and Amendments: Authorized users may approve, modify, or cancel draft POs.
+* Audit Trail Requirements: The system must maintain a rigorous audit trail for every amendment or cancellation, capturing the User ID, Timestamp, Old Value, and New Value.
+
+4.4 Supplier Portal and Notification
+
+Suppliers receive unique login credentials. Upon PO issuance, the system must trigger automated notifications via both email and the internal portal dashboard.
+
+4.5 Delivery, Receipt, and Quality Assurance
+
+* Track and Trace: Each consignment is tracked via QR code from the supplier's dispatch to the hospital consignee.
+* Consignee Logging: Upon delivery, the Hospital Superintendent or designated officer logs receipt and records any physical discrepancies.
+* QA & Verification: The Superintendent must verify that the equipment meets 100% of the RC quality specifications.
+* Blocking Controls: The system must prevent final sign-off and payment triggering unless the Quality Verification field is marked "100% Compliant."
+* Mandatory Documentation: The vendor must upload relevant certificates and accreditation documents. The tool must block the closure of the task if these attachments are missing.
+
+5. Functional Requirements and Business Rules
+
+* Status Transitions: Indents cannot bypass mandatory approval stages or move to PO issuance without a linked, active RC.
+* SLA Tracking: The tool must track the time taken at each stage (Indent to Approval, RC Creation to PO) against target SLAs.
+* Parallel Processing: The system shall allow the batching of multiple indents for identical equipment into a single procurement activity or tender.
+* Validation Rules: The system must enforce mandatory data entry for tax rates, vendor details, and CMC charges before allowing workflow progression.
+* Quality Mismatch Rule: If the delivered quality is lower than the 100% specified in the RC (e.g., 50% quality risk mentioned in transcripts), the system must flag a non-compliance alert and halt the acceptance process.
+
+6. Reporting and Analytics
+
+The system must support 10 report definitions and 10 KPI specifications to identify bottlenecks and provide a "complete list" of equipment stages. Key KPIs include:
+
+* Procurement Cycle Time: Duration from initial Indent Digitisation to PO issuance.
+* Vendor Lead Time: Time elapsed between PO issuance and equipment delivery.
+* QA Rejection Rate: Percentage of equipment failed during the Superintendent's verification phase.
+* RC Expiry Forecast: Reports identifying contracts nearing expiry to prevent procurement delays.
+
+7. Technical Constraints and Integrations
+
+* E-Procurement Platform: No direct API integration is possible with the external government e-procurement website. All tender-related status updates must be managed manually within the TGMSIDC tool.
+* Platform Accessibility: The tool must be a web-based application.
+* Mobile Functionality: The supply chain module must be mobile-friendly to support on-site QR code scanning and real-time delivery updates at the hospital level.

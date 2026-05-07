@@ -1,0 +1,1611 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: TGMSIDC Equipment Procurement and Order Management API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: indents
+    description: Indent management
+  - name: rate-contracts
+    description: Rate contract management
+  - name: purchase-orders
+    description: Purchase order management
+  - name: vendors
+    description: Vendor management
+  - name: institutions
+    description: Institution management
+  - name: equipment
+    description: Equipment master
+  - name: deliveries
+    description: Delivery and QA tracking
+  - name: dashboard
+    description: Dashboard and analytics
+  - name: tenders
+    description: Tender management
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ─── INDENTS ────────────────────────────────────────────────────────────────
+  /indents:
+    get:
+      operationId: listIndents
+      tags: [indents]
+      summary: List all indents
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: facilityId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of indents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Indent"
+    post:
+      operationId: createIndent
+      tags: [indents]
+      summary: Create a new indent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIndentBody"
+      responses:
+        "201":
+          description: Created indent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Indent"
+
+  /indents/{id}:
+    get:
+      operationId: getIndent
+      tags: [indents]
+      summary: Get a single indent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Indent details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Indent"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateIndent
+      tags: [indents]
+      summary: Update indent status or details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIndentBody"
+      responses:
+        "200":
+          description: Updated indent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Indent"
+
+  /indents/{id}/approve:
+    post:
+      operationId: approveIndent
+      tags: [indents]
+      summary: Approve an indent and set procurement mode
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApproveIndentBody"
+      responses:
+        "200":
+          description: Approved indent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Indent"
+
+  /indents/{id}/reject:
+    post:
+      operationId: rejectIndent
+      tags: [indents]
+      summary: Reject an indent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectIndentBody"
+      responses:
+        "200":
+          description: Rejected indent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Indent"
+
+  # ─── RATE CONTRACTS ─────────────────────────────────────────────────────────
+  /rate-contracts:
+    get:
+      operationId: listRateContracts
+      tags: [rate-contracts]
+      summary: List all rate contracts
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: equipmentId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of rate contracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RateContract"
+    post:
+      operationId: createRateContract
+      tags: [rate-contracts]
+      summary: Create a new rate contract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRateContractBody"
+      responses:
+        "201":
+          description: Created rate contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateContract"
+
+  /rate-contracts/{id}:
+    get:
+      operationId: getRateContract
+      tags: [rate-contracts]
+      summary: Get a rate contract
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rate contract details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateContract"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateRateContract
+      tags: [rate-contracts]
+      summary: Update a rate contract
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRateContractBody"
+      responses:
+        "200":
+          description: Updated rate contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateContract"
+
+  /rate-contracts/expiring-soon:
+    get:
+      operationId: getExpiringRateContracts
+      tags: [rate-contracts]
+      summary: Get rate contracts expiring in the next 60 days
+      responses:
+        "200":
+          description: Expiring rate contracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RateContract"
+
+  # ─── PURCHASE ORDERS ────────────────────────────────────────────────────────
+  /purchase-orders:
+    get:
+      operationId: listPurchaseOrders
+      tags: [purchase-orders]
+      summary: List all purchase orders
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: vendorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of purchase orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PurchaseOrder"
+    post:
+      operationId: createPurchaseOrder
+      tags: [purchase-orders]
+      summary: Create a new purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePurchaseOrderBody"
+      responses:
+        "201":
+          description: Created purchase order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseOrder"
+
+  /purchase-orders/{id}:
+    get:
+      operationId: getPurchaseOrder
+      tags: [purchase-orders]
+      summary: Get a purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: PO details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseOrder"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePurchaseOrder
+      tags: [purchase-orders]
+      summary: Update a purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePurchaseOrderBody"
+      responses:
+        "200":
+          description: Updated PO
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseOrder"
+
+  /purchase-orders/{id}/approve:
+    post:
+      operationId: approvePurchaseOrder
+      tags: [purchase-orders]
+      summary: Approve a draft purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Approved PO
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseOrder"
+
+  /purchase-orders/{id}/cancel:
+    post:
+      operationId: cancelPurchaseOrder
+      tags: [purchase-orders]
+      summary: Cancel a purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelPurchaseOrderBody"
+      responses:
+        "200":
+          description: Cancelled PO
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseOrder"
+
+  # ─── TENDERS ────────────────────────────────────────────────────────────────
+  /tenders:
+    get:
+      operationId: listTenders
+      tags: [tenders]
+      summary: List all tenders
+      responses:
+        "200":
+          description: List of tenders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tender"
+    post:
+      operationId: createTender
+      tags: [tenders]
+      summary: Create a tender record for an indent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenderBody"
+      responses:
+        "201":
+          description: Created tender
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tender"
+
+  /tenders/{id}:
+    get:
+      operationId: getTender
+      tags: [tenders]
+      summary: Get a tender
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tender details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tender"
+    patch:
+      operationId: updateTender
+      tags: [tenders]
+      summary: Update tender milestone status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenderBody"
+      responses:
+        "200":
+          description: Updated tender
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tender"
+
+  # ─── DELIVERIES ─────────────────────────────────────────────────────────────
+  /deliveries:
+    get:
+      operationId: listDeliveries
+      tags: [deliveries]
+      summary: List all deliveries
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: poId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of deliveries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Delivery"
+    post:
+      operationId: createDelivery
+      tags: [deliveries]
+      summary: Create a delivery record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDeliveryBody"
+      responses:
+        "201":
+          description: Created delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+
+  /deliveries/{id}:
+    get:
+      operationId: getDelivery
+      tags: [deliveries]
+      summary: Get a delivery
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Delivery details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateDelivery
+      tags: [deliveries]
+      summary: Update delivery status or QA result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDeliveryBody"
+      responses:
+        "200":
+          description: Updated delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+
+  /deliveries/{id}/accept:
+    post:
+      operationId: acceptDelivery
+      tags: [deliveries]
+      summary: Accept delivery (issue acceptance certificate)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Accepted delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+
+  # ─── VENDORS ────────────────────────────────────────────────────────────────
+  /vendors:
+    get:
+      operationId: listVendors
+      tags: [vendors]
+      summary: List all vendors
+      responses:
+        "200":
+          description: List of vendors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Vendor"
+    post:
+      operationId: createVendor
+      tags: [vendors]
+      summary: Register a new vendor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVendorBody"
+      responses:
+        "201":
+          description: Created vendor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+
+  /vendors/{id}:
+    get:
+      operationId: getVendor
+      tags: [vendors]
+      summary: Get a vendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vendor details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+        "404":
+          description: Not found
+
+  # ─── INSTITUTIONS ────────────────────────────────────────────────────────────
+  /institutions:
+    get:
+      operationId: listInstitutions
+      tags: [institutions]
+      summary: List all institutions
+      responses:
+        "200":
+          description: List of institutions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Institution"
+    post:
+      operationId: createInstitution
+      tags: [institutions]
+      summary: Register a new institution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInstitutionBody"
+      responses:
+        "201":
+          description: Created institution
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Institution"
+
+  # ─── EQUIPMENT ───────────────────────────────────────────────────────────────
+  /equipment:
+    get:
+      operationId: listEquipment
+      tags: [equipment]
+      summary: List equipment master records
+      responses:
+        "200":
+          description: List of equipment
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Equipment"
+    post:
+      operationId: createEquipment
+      tags: [equipment]
+      summary: Create an equipment master record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEquipmentBody"
+      responses:
+        "201":
+          description: Created equipment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+
+  # ─── DASHBOARD ───────────────────────────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard KPI summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/procurement-pipeline:
+    get:
+      operationId: getProcurementPipeline
+      tags: [dashboard]
+      summary: Breakdown of indents at each pipeline stage
+      responses:
+        "200":
+          description: Pipeline breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PipelineStage"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Recent procurement events timeline
+      responses:
+        "200":
+          description: Recent activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /dashboard/vendor-performance:
+    get:
+      operationId: getVendorPerformance
+      tags: [dashboard]
+      summary: Vendor performance metrics
+      responses:
+        "200":
+          description: Vendor performance list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VendorPerformance"
+
+  /dashboard/sla-metrics:
+    get:
+      operationId: getSlaMetrics
+      tags: [dashboard]
+      summary: SLA tracking metrics
+      responses:
+        "200":
+          description: SLA metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SlaMetrics"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    # ─── INDENT ────────────────────────────────────────────────────────────────
+    Indent:
+      type: object
+      properties:
+        id:
+          type: integer
+        indentNumber:
+          type: string
+        facilityId:
+          type: integer
+        facilityName:
+          type: string
+        equipmentId:
+          type: integer
+        equipmentName:
+          type: string
+        quantity:
+          type: integer
+        technicalRequirements:
+          type: string
+        status:
+          type: string
+          description: "draft | pending_approval | approved | rejected | linked_to_rc | tender_initiated | po_issued"
+        procurementMode:
+          type: ["string", "null"]
+          description: "rate_contract | tender"
+        rateContractId:
+          type: ["integer", "null"]
+        tenderId:
+          type: ["integer", "null"]
+        rejectionReason:
+          type: ["string", "null"]
+        digitisedBy:
+          type: string
+        approvedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        lineItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateIndentLineItem"
+      required:
+        - id
+        - indentNumber
+        - facilityId
+        - facilityName
+        - equipmentId
+        - equipmentName
+        - quantity
+        - technicalRequirements
+        - status
+        - procurementMode
+        - rateContractId
+        - tenderId
+        - rejectionReason
+        - digitisedBy
+        - approvedBy
+        - createdAt
+        - updatedAt
+
+    CreateIndentLineItem:
+      type: object
+      properties:
+        category:
+          type: string
+        equipmentId:
+          type: integer
+        equipmentName:
+          type: string
+        qty:
+          type: integer
+        unit:
+          type: string
+        estimatedUnitRate:
+          type: number
+        justification:
+          type: string
+      required:
+        - category
+        - equipmentId
+        - equipmentName
+        - qty
+        - unit
+        - estimatedUnitRate
+        - justification
+
+    CreateIndentBody:
+      type: object
+      properties:
+        facilityId:
+          type: integer
+        equipmentId:
+          type: integer
+        quantity:
+          type: integer
+        technicalRequirements:
+          type: string
+        digitisedBy:
+          type: string
+        budgetHead:
+          type: string
+        urgency:
+          type: string
+        remarks:
+          type: string
+        lineItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateIndentLineItem"
+      required:
+        - facilityId
+        - equipmentId
+        - quantity
+        - technicalRequirements
+        - digitisedBy
+
+    UpdateIndentBody:
+      type: object
+      properties:
+        quantity:
+          type: integer
+        technicalRequirements:
+          type: string
+        status:
+          type: string
+
+    ApproveIndentBody:
+      type: object
+      properties:
+        procurementMode:
+          type: string
+          description: "rate_contract | tender"
+        rateContractId:
+          type: ["integer", "null"]
+        approvedBy:
+          type: string
+      required:
+        - procurementMode
+        - approvedBy
+
+    RejectIndentBody:
+      type: object
+      properties:
+        rejectionReason:
+          type: string
+        rejectedBy:
+          type: string
+      required:
+        - rejectionReason
+        - rejectedBy
+
+    # ─── RATE CONTRACT ─────────────────────────────────────────────────────────
+    RateContract:
+      type: object
+      properties:
+        id:
+          type: integer
+        contractNumber:
+          type: string
+        equipmentId:
+          type: integer
+        equipmentName:
+          type: string
+        vendorId:
+          type: integer
+        vendorName:
+          type: string
+        unitPrice:
+          type: number
+        gstRate:
+          type: number
+        warrantyYears:
+          type: integer
+        cmcCharges:
+          type: number
+        cmcStartYear:
+          type: integer
+        status:
+          type: string
+          description: "active | expired | closed | renewed"
+        startDate:
+          type: string
+        endDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - contractNumber
+        - equipmentId
+        - equipmentName
+        - vendorId
+        - vendorName
+        - unitPrice
+        - gstRate
+        - warrantyYears
+        - cmcCharges
+        - cmcStartYear
+        - status
+        - startDate
+        - endDate
+        - createdAt
+        - updatedAt
+
+    CreateRateContractBody:
+      type: object
+      properties:
+        equipmentId:
+          type: integer
+        vendorId:
+          type: integer
+        unitPrice:
+          type: number
+        gstRate:
+          type: number
+        warrantyYears:
+          type: integer
+        cmcCharges:
+          type: number
+        cmcStartYear:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+      required:
+        - equipmentId
+        - vendorId
+        - unitPrice
+        - gstRate
+        - warrantyYears
+        - cmcCharges
+        - cmcStartYear
+        - startDate
+        - endDate
+
+    UpdateRateContractBody:
+      type: object
+      properties:
+        unitPrice:
+          type: number
+        gstRate:
+          type: number
+        status:
+          type: string
+        endDate:
+          type: string
+        cmcCharges:
+          type: number
+
+    # ─── PURCHASE ORDER ────────────────────────────────────────────────────────
+    PurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        poNumber:
+          type: string
+        indentId:
+          type: integer
+        rateContractId:
+          type: integer
+        vendorId:
+          type: integer
+        vendorName:
+          type: string
+        equipmentId:
+          type: integer
+        equipmentName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        gstRate:
+          type: number
+        totalAmount:
+          type: number
+        status:
+          type: string
+          description: "draft | approved | dispatched | delivered | cancelled"
+        deliveryAddress:
+          type: string
+        expectedDeliveryDate:
+          type: ["string", "null"]
+        actualDeliveryDate:
+          type: ["string", "null"]
+        cancellationReason:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - poNumber
+        - indentId
+        - rateContractId
+        - vendorId
+        - vendorName
+        - equipmentId
+        - equipmentName
+        - quantity
+        - unitPrice
+        - gstRate
+        - totalAmount
+        - status
+        - deliveryAddress
+        - expectedDeliveryDate
+        - actualDeliveryDate
+        - cancellationReason
+        - createdAt
+        - updatedAt
+
+    CreatePurchaseOrderBody:
+      type: object
+      properties:
+        indentId:
+          type: integer
+        rateContractId:
+          type: integer
+        quantity:
+          type: integer
+        deliveryAddress:
+          type: string
+        expectedDeliveryDate:
+          type: string
+      required:
+        - indentId
+        - rateContractId
+        - quantity
+        - deliveryAddress
+        - expectedDeliveryDate
+
+    UpdatePurchaseOrderBody:
+      type: object
+      properties:
+        quantity:
+          type: integer
+        deliveryAddress:
+          type: string
+        expectedDeliveryDate:
+          type: string
+        status:
+          type: string
+
+    CancelPurchaseOrderBody:
+      type: object
+      properties:
+        cancellationReason:
+          type: string
+        cancelledBy:
+          type: string
+      required:
+        - cancellationReason
+        - cancelledBy
+
+    # ─── TENDER ───────────────────────────────────────────────────────────────
+    Tender:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenderNumber:
+          type: string
+        indentId:
+          type: integer
+        equipmentName:
+          type: string
+        status:
+          type: string
+          description: "invited | bids_received | l1_identified | rc_created | cancelled"
+        tenderInvitedDate:
+          type: ["string", "null"]
+        bidsReceivedDate:
+          type: ["string", "null"]
+        l1BidderName:
+          type: ["string", "null"]
+        l1BidderAmount:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - tenderNumber
+        - indentId
+        - equipmentName
+        - status
+        - tenderInvitedDate
+        - bidsReceivedDate
+        - l1BidderName
+        - l1BidderAmount
+        - notes
+        - createdAt
+        - updatedAt
+
+    CreateTenderBody:
+      type: object
+      properties:
+        indentId:
+          type: integer
+        tenderInvitedDate:
+          type: string
+        notes:
+          type: string
+      required:
+        - indentId
+        - tenderInvitedDate
+
+    UpdateTenderBody:
+      type: object
+      properties:
+        status:
+          type: string
+        bidsReceivedDate:
+          type: string
+        l1BidderName:
+          type: string
+        l1BidderAmount:
+          type: number
+        notes:
+          type: string
+
+    # ─── DELIVERY ─────────────────────────────────────────────────────────────
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: integer
+        qrCode:
+          type: string
+        purchaseOrderId:
+          type: integer
+        poNumber:
+          type: string
+        vendorId:
+          type: integer
+        vendorName:
+          type: string
+        facilityId:
+          type: integer
+          description: Destination facility
+        facilityName:
+          type: string
+        equipmentName:
+          type: string
+        quantity:
+          type: integer
+        status:
+          type: string
+          description: "dispatched | in_transit | delivered | qa_pending | qa_passed | qa_failed | accepted"
+        dispatchDate:
+          type: ["string", "null"]
+        deliveredDate:
+          type: ["string", "null"]
+        qaComplianceScore:
+          type: ["number", "null"]
+        qaNotes:
+          type: ["string", "null"]
+        discrepancyNotes:
+          type: ["string", "null"]
+        documentsUploaded:
+          type: boolean
+        acceptanceCertificateIssued:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - qrCode
+        - purchaseOrderId
+        - poNumber
+        - vendorId
+        - vendorName
+        - facilityId
+        - facilityName
+        - equipmentName
+        - quantity
+        - status
+        - dispatchDate
+        - deliveredDate
+        - qaComplianceScore
+        - qaNotes
+        - discrepancyNotes
+        - documentsUploaded
+        - acceptanceCertificateIssued
+        - createdAt
+        - updatedAt
+
+    CreateDeliveryBody:
+      type: object
+      properties:
+        purchaseOrderId:
+          type: integer
+        facilityId:
+          type: integer
+        quantity:
+          type: integer
+        dispatchDate:
+          type: string
+      required:
+        - purchaseOrderId
+        - facilityId
+        - quantity
+        - dispatchDate
+
+    UpdateDeliveryBody:
+      type: object
+      properties:
+        status:
+          type: string
+        deliveredDate:
+          type: string
+        qaComplianceScore:
+          type: number
+        qaNotes:
+          type: string
+        discrepancyNotes:
+          type: string
+        documentsUploaded:
+          type: boolean
+
+    # ─── VENDOR ───────────────────────────────────────────────────────────────
+    Vendor:
+      type: object
+      properties:
+        id:
+          type: integer
+        vendorCode:
+          type: string
+        name:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        address:
+          type: string
+        gstNumber:
+          type: string
+        isL1Bidder:
+          type: boolean
+        performanceScore:
+          type: ["number", "null"]
+        status:
+          type: string
+          description: "active | suspended | blacklisted"
+        createdAt:
+          type: string
+      required:
+        - id
+        - vendorCode
+        - name
+        - contactEmail
+        - contactPhone
+        - address
+        - gstNumber
+        - isL1Bidder
+        - performanceScore
+        - status
+        - createdAt
+
+    CreateVendorBody:
+      type: object
+      properties:
+        name:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        address:
+          type: string
+        gstNumber:
+          type: string
+      required:
+        - name
+        - contactEmail
+        - contactPhone
+        - address
+        - gstNumber
+
+    # ─── INSTITUTION ──────────────────────────────────────────────────────────
+    Institution:
+      type: object
+      properties:
+        id:
+          type: integer
+        institutionCode:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          description: "hospital | phc | district_hospital | medical_college"
+        district:
+          type: string
+        address:
+          type: string
+        superintendentName:
+          type: ["string", "null"]
+        contactEmail:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - institutionCode
+        - name
+        - type
+        - district
+        - address
+        - superintendentName
+        - contactEmail
+        - createdAt
+
+    CreateInstitutionBody:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        district:
+          type: string
+        address:
+          type: string
+        superintendentName:
+          type: string
+        contactEmail:
+          type: string
+      required:
+        - name
+        - type
+        - district
+        - address
+
+    # ─── EQUIPMENT ────────────────────────────────────────────────────────────
+    Equipment:
+      type: object
+      properties:
+        id:
+          type: integer
+        equipmentCode:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          description: "diagnostic | surgical | imaging | icu | laboratory | general"
+        specifications:
+          type: string
+        standardised:
+          type: boolean
+        gstRate:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - equipmentCode
+        - name
+        - category
+        - specifications
+        - standardised
+        - gstRate
+        - createdAt
+
+    CreateEquipmentBody:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        specifications:
+          type: string
+        gstRate:
+          type: number
+      required:
+        - name
+        - category
+        - specifications
+        - gstRate
+
+    # ─── DASHBOARD ────────────────────────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      properties:
+        totalIndents:
+          type: integer
+        pendingApproval:
+          type: integer
+        activeRateContracts:
+          type: integer
+        activePurchaseOrders:
+          type: integer
+        deliveriesPendingQA:
+          type: integer
+        expiringContracts:
+          type: integer
+        totalVendors:
+          type: integer
+        totalInstitutions:
+          type: integer
+        avgProcycleDays:
+          type: number
+        qaRejectionRate:
+          type: number
+      required:
+        - totalIndents
+        - pendingApproval
+        - activeRateContracts
+        - activePurchaseOrders
+        - deliveriesPendingQA
+        - expiringContracts
+        - totalVendors
+        - totalInstitutions
+        - avgProcycleDays
+        - qaRejectionRate
+
+    PipelineStage:
+      type: object
+      properties:
+        stage:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required:
+        - stage
+        - count
+        - percentage
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        description:
+          type: string
+        entityId:
+          type: integer
+        entityType:
+          type: string
+        timestamp:
+          type: string
+        actor:
+          type: string
+      required:
+        - id
+        - type
+        - description
+        - entityId
+        - entityType
+        - timestamp
+        - actor
+
+    VendorPerformance:
+      type: object
+      properties:
+        vendorId:
+          type: integer
+        vendorName:
+          type: string
+        totalOrders:
+          type: integer
+        onTimeDeliveries:
+          type: integer
+        qaPassRate:
+          type: number
+        avgLeadTimeDays:
+          type: number
+        performanceScore:
+          type: number
+      required:
+        - vendorId
+        - vendorName
+        - totalOrders
+        - onTimeDeliveries
+        - qaPassRate
+        - avgLeadTimeDays
+        - performanceScore
+
+    SlaMetrics:
+      type: object
+      properties:
+        avgIndentToApprovalDays:
+          type: number
+        avgApprovalToPoDays:
+          type: number
+        avgPoToDeliveryDays:
+          type: number
+        slaBreaches:
+          type: integer
+        onTrackCount:
+          type: integer
+      required:
+        - avgIndentToApprovalDays
+        - avgApprovalToPoDays
+        - avgPoToDeliveryDays
+        - slaBreaches
+        - onTrackCount
