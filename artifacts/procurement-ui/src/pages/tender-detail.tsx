@@ -12,23 +12,42 @@ import { format } from "date-fns";
 import { useState, useRef } from "react";
 
 const MILESTONES = [
-  { key: "invited", label: "NIT Published", desc: "Notice Inviting Tender published on e-procurement portal (tender.telangana.gov.in)" },
-  { key: "pre_bid", label: "Pre-Bid Meeting", desc: "Pre-bid queries received. Bidders must submit clarifications 2 days before meeting in writing." },
-  { key: "bids_received", label: "Bids Received & Opened", desc: "Technical & financial bids collected on e-procurement portal and opened" },
-  { key: "technical_eval", label: "Technical Evaluation", desc: "Bids evaluated by committee. Document verification at TGMSIDC HQ, DM&HS Campus, Koti, Hyderabad." },
-  { key: "l1_identified", label: "L1 Bidder Identified", desc: "Lowest eligible financial bidder identified and verified. PSD: 10% of Contract Value within 7 days." },
-  { key: "rc_created", label: "Rate Contract / Award", desc: "Work order issued. Rate Contract established for the specified period (typically 2 years)." },
+  { key: "planning",        label: "Tender Planning",          desc: "Procurement justification report prepared. Indent linked. Procurement mode confirmed as open tender." },
+  { key: "doc_prep",        label: "Document Preparation",     desc: "TID/NIT drafted with Annexure-1 (Schedule of Requirements), Annexure-2 (Tech Specs), EMD schedule." },
+  { key: "approval",        label: "Approval for Tender",      desc: "Procurement committee review and administrative sanction obtained from competent authority." },
+  { key: "invited",         label: "Publication / NIT",        desc: "Notice Inviting Tender published on e-procurement portal and in two leading newspapers." },
+  { key: "pre_bid",         label: "Bid Receipt",              desc: "Pre-bid meeting held. Bidder queries collected and official responses published as corrigendum." },
+  { key: "bids_received",   label: "Bid Receipt & Opening",    desc: "Technical and financial bids collected on e-procurement portal and formally opened." },
+  { key: "bid_query",       label: "Bid Query Handling",       desc: "Post-submission clarifications issued. Any corrigendum published. Document verification scheduled." },
+  { key: "technical_eval",  label: "Technical Evaluation",     desc: "Evaluation committee reviews bids. Document verification conducted at HPC Head Office." },
+  { key: "commercial_eval", label: "Commercial Evaluation",    desc: "Financial bids opened post technical qualification. Comparative statement of rates prepared." },
+  { key: "l1_identified",   label: "Approval / L1 Award",      desc: "L1 bidder confirmed. Recommendation report approved. PSD: 10% of Contract Value within 7 days." },
+  { key: "contract_final",  label: "Contract Finalisation",    desc: "LOI issued, agreement executed, Performance Security Deposit (PSD) collected." },
+  { key: "rc_created",      label: "RC Creation / Closure",    desc: "Work order issued. Rate Contract established for the agreed period (typically 2 years)." },
 ];
+
+const STATUS_TO_MILESTONE_IDX: Record<string, number> = {
+  planning: 0, doc_prep: 1, doc_preparation: 1, approval: 2,
+  invited: 3,
+  pre_bid: 4,
+  bids_received: 5,
+  bid_query: 6,
+  technical_eval: 7, technical_evaluation: 7,
+  commercial_eval: 8,
+  l1_identified: 9, awarded: 9,
+  contract_final: 10,
+  rc_created: 11,
+};
 
 interface TenderDoc { name: string; size: string; docType: string; uploadedAt: string; }
 
 const INIT_DOCS: TenderDoc[] = [
-  { name: `TID_No_1A.67_TGMSIDC_EQU_2025-26_DEXA.pdf`, size: "2.4 MB", docType: "nit", uploadedAt: "2026-01-03" },
+  { name: `TID_No_1A.67_HPC_EQU_2025-26_DEXA.pdf`, size: "2.4 MB", docType: "nit", uploadedAt: "2026-01-03" },
   { name: "Technical_Specs_DEXA_Scanner.pdf", size: "1.8 MB", docType: "specs", uploadedAt: "2026-01-03" },
 ];
 
 const DOC_SLOTS = [
-  { key: "nit", label: "TID / NIT Document", accept: ".pdf", hint: "Tender Invitation Document (signed by MD, TGMSIDC)" },
+  { key: "nit", label: "TID / NIT Document", accept: ".pdf", hint: "Tender Invitation Document (signed by MD, HPC)" },
   { key: "corrigendum", label: "Corrigendum / Amendment", accept: ".pdf", hint: "Any amendments to the NIT/TID" },
   { key: "specs", label: "Technical Specifications (Annexure-2)", accept: ".pdf,.docx", hint: "Equipment technical specs per Annexure-2" },
   { key: "pre_bid_qa", label: "Pre-Bid Q&A Minutes", accept: ".pdf,.docx,.xls,.xlsx", hint: "Minutes of pre-bid meeting and official responses" },
@@ -38,7 +57,7 @@ const DOC_SLOTS = [
   { key: "bid_security", label: "Bid Security (EMD) — Annexure 3", accept: ".pdf,.jpg,.png", hint: "EMD Bank Guarantee / BG / Payment receipt" },
   { key: "perf_security", label: "Performance Security (PSD) — Annexure 4", accept: ".pdf,.jpg,.png", hint: "PSD: 10% of Contract Value, within 7 days of PO" },
   { key: "award", label: "Award Letter / Rate Contract", accept: ".pdf", hint: "Signed work order and rate contract document" },
-  { key: "tripartite", label: "Tripartite Agreement (Form-P10)", accept: ".pdf", hint: "Agreement between TGMSIDC, Vendor and Hospital" },
+  { key: "tripartite", label: "Tripartite Agreement (Form-P10)", accept: ".pdf", hint: "Agreement between HPC, Vendor and Hospital" },
   { key: "other", label: "Other Documents", accept: ".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png", hint: "Any other relevant documents (Form-P1 to P10)" },
 ];
 
@@ -58,7 +77,7 @@ export default function TenderDetail() {
   const [editingNIT, setEditingNIT] = useState(false);
   const [nitFields, setNitFields] = useState({
     tenderId: "662453",
-    nitNo: "1A.67/TGMSIDC/EQU/2025-26",
+    nitNo: "1A.67/HPC/EQU/2025-26",
     nitDate: "2026-01-16",
     bidCallingDate: "2026-01-03",
     downloadDate: "2026-01-03",
@@ -81,13 +100,13 @@ export default function TenderDetail() {
     psdPercent: "10",
     psdDueDays: "7",
     contractPeriod: "2 years (Rate Contract)",
-    msmeExemption: "MSME/SSI/EM-II units registered in Telangana — submit Bid Securing Declaration (GFR 2017)",
+    msmeExemption: "MSME/SSI/EM-II units — submit Bid Securing Declaration (GFR 2017)",
     evalCommittee: "Er. K. Srinivas (GM Equipment), Dr. P. Reddy (Technical Member), S. Venkat (Finance)",
-    contactName: "The General Manager, Equipment Wing, TGMSIDC, Hyderabad",
+    contactName: "The General Manager, Equipment Wing, HPC, Hyderabad",
     contactEmail: "tsmsidcequ@gmail.com",
     contactMobile: "9391003370",
-    eprocPortal: "https://tender.telangana.gov.in",
-    docsVerifLocation: "TGMSIDC Head Office, DM&HS Campus, Koti, Hyderabad",
+    eprocPortal: "https://eprocurement.gov.in",
+    docsVerifLocation: "HPC Head Office, DM&HS Campus, Koti, Hyderabad",
     rateContractPeriod: "2 years",
     publicationNewspaper: "The Hindu (English Daily) & Velugu (Telugu Daily) — 16.04.2025",
   });
@@ -109,7 +128,7 @@ export default function TenderDetail() {
   if (isLoading) return <div className="flex justify-center py-20"><div className="animate-spin h-8 w-8 rounded-full border-4 border-primary border-t-transparent" /></div>;
   if (!tender) return <div className="text-center py-20 text-muted-foreground">Tender not found</div>;
 
-  const currentIdx = Math.max(0, MILESTONES.findIndex((m) => m.key === tender.status));
+  const currentIdx = Math.max(0, STATUS_TO_MILESTONE_IDX[tender.status] ?? 0);
   const uploadedByType = (key: string) => docs.filter(d => d.docType === key);
 
   function advanceMilestone() {
@@ -143,7 +162,7 @@ export default function TenderDetail() {
       <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
         <div className="text-sm text-blue-800">
-          <span className="font-semibold">TGMSIDC e-Procurement:</span> External tendering is conducted on {" "}
+          <span className="font-semibold">e-Procurement:</span> External tendering is conducted on {" "}
           <a href={nitFields.eprocPortal} target="_blank" rel="noreferrer" className="underline font-medium">{nitFields.eprocPortal}</a>.
           Update milestones and upload documents here as they are completed.
           Published in <span className="font-medium">{nitFields.publicationNewspaper}</span>.

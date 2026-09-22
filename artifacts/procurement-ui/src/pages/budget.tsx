@@ -214,10 +214,10 @@ export default function Budget() {
             </thead>
             <tbody>
               {[
-                { ref: "441A/591/TGMSIDC/EQU/2025-26", bh: "BH-2526-003", eq: "Surgical Diathermy / Cautery Machine", committed: 582750, utilized: 524475, date: "16 Mar 2026", type: "PO Commitment (Partial Paid)" },
-                { ref: "216/418/TGMSIDC/EQU/Vemulawada/2022-23", bh: "BH-2223-002", eq: "Mammogram Compatible CR System", committed: 682500, utilized: 682500, date: "02 Nov 2022", type: "PO Commitment (Paid)" },
-                { ref: "IND/TGMSIDC/EQU/WDH/PO/2026/003", bh: "BH-2526-001", eq: "Fully Automated Biochemistry Analyser", committed: 1344000, utilized: 0, date: "28 Apr 2026", type: "PO Commitment" },
-                { ref: "1A.67/TGMSIDC/EQU/2025-26", bh: "BH-2526-004", eq: "DEXA Scanner", committed: 4500000, utilized: 0, date: "03 Jan 2026", type: "Tender Estimate" },
+                { ref: "441A/591/HPC/EQU/2025-26", bh: "BH-2526-003", eq: "Surgical Diathermy / Cautery Machine", committed: 582750, utilized: 524475, date: "16 Mar 2026", type: "PO Commitment (Partial Paid)" },
+                { ref: "216/418/HPC/EQU/Vemulawada/2022-23", bh: "BH-2223-002", eq: "Mammogram Compatible CR System", committed: 682500, utilized: 682500, date: "02 Nov 2022", type: "PO Commitment (Paid)" },
+                { ref: "IND/HPC/EQU/WDH/PO/2026/003", bh: "BH-2526-001", eq: "Fully Automated Biochemistry Analyser", committed: 1344000, utilized: 0, date: "28 Apr 2026", type: "PO Commitment" },
+                { ref: "1A.67/HPC/EQU/2025-26", bh: "BH-2526-004", eq: "DEXA Scanner", committed: 4500000, utilized: 0, date: "03 Jan 2026", type: "Tender Estimate" },
               ].map((row, i) => (
                 <tr key={i} className="border-b hover:bg-muted/20">
                   <td className="px-4 py-3 font-mono text-xs font-semibold text-primary">{row.ref}</td>
@@ -257,7 +257,7 @@ export default function Budget() {
                 <Select value={form.directorate} onValueChange={v => setForm({ ...form, directorate: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["DME", "TVVP", "CHFW", "Specialty Hospitals", "TGMSIDC"].map(d => (
+                    {["DME", "TVVP", "CHFW", "Specialty Hospitals", "HPC"].map(d => (
                       <SelectItem key={d} value={d}>{d}</SelectItem>
                     ))}
                   </SelectContent>

@@ -5,7 +5,8 @@ import { z } from "zod/v4";
 export const tendersTable = pgTable("tenders", {
   id: serial("id").primaryKey(),
   tenderNumber: text("tender_number").notNull().unique(),
-  indentId: integer("indent_id").notNull(),
+  indentId: integer("indent_id"),
+  equipmentName: text("equipment_name"),
   status: text("status").notNull().default("invited"),
   tenderInvitedDate: timestamp("tender_invited_date", { withTimezone: true }),
   bidsReceivedDate: timestamp("bids_received_date", { withTimezone: true }),

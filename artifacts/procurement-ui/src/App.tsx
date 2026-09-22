@@ -33,6 +33,16 @@ import Invoices from "@/pages/invoices";
 import Payments from "@/pages/payments";
 import Consolidation from "@/pages/consolidation";
 import ApprovalHierarchy from "@/pages/approval-hierarchy";
+import RCCoverage from "@/pages/rc-coverage";
+import StockTransfers from "@/pages/stock-transfers";
+import StockTransferNew from "@/pages/stock-transfer-new";
+import StockTransferDetail from "@/pages/stock-transfer-detail";
+import Quarantine from "@/pages/quarantine";
+import QuarantineDetail from "@/pages/quarantine-detail";
+import StockVisibility from "@/pages/stock-visibility";
+import NearExpiry from "@/pages/near-expiry";
+import DemandForecast from "@/pages/demand-forecast";
+import KPIDashboard from "@/pages/kpi-dashboard";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -80,7 +90,17 @@ function Router() {
         <Route path="/institutions" component={Institutions} />
         <Route path="/equipment" component={Equipment} />
         <Route path="/reports" component={Reports} />
+        <Route path="/rc-coverage" component={RCCoverage} />
         <Route path="/approval-hierarchy" component={ApprovalHierarchy} />
+        <Route path="/stock-transfers/new" component={StockTransferNew} />
+        <Route path="/stock-transfers/:id" component={StockTransferDetail} />
+        <Route path="/stock-transfers" component={StockTransfers} />
+        <Route path="/quarantine/:id" component={QuarantineDetail} />
+        <Route path="/quarantine" component={Quarantine} />
+        <Route path="/stock-visibility" component={StockVisibility} />
+        <Route path="/near-expiry" component={NearExpiry} />
+        <Route path="/demand-forecast" component={DemandForecast} />
+        <Route path="/kpi-dashboard" component={KPIDashboard} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

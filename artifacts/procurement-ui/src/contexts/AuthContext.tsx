@@ -35,7 +35,7 @@ export const DUMMY_USERS: AuthUser[] = [
     role: "biomedical_engineer",
     roleLabel: "Biomedical Engineer",
     initials: "KS",
-    designation: "Sr. Biomedical Engineer, TGMSIDC Equipment Wing",
+    designation: "Sr. Biomedical Engineer, Equipment Wing",
   },
   {
     id: "u3",
@@ -43,7 +43,7 @@ export const DUMMY_USERS: AuthUser[] = [
     role: "gm",
     roleLabel: "General Manager",
     initials: "PN",
-    designation: "General Manager (Equipment), TGMSIDC",
+    designation: "General Manager (Equipment), HPC",
   },
   {
     id: "u7",
@@ -51,7 +51,7 @@ export const DUMMY_USERS: AuthUser[] = [
     role: "director",
     roleLabel: "Additional Director",
     initials: "DV",
-    designation: "Additional Director (Procurement), TGMSIDC",
+    designation: "Additional Director (Procurement), HPC",
   },
   {
     id: "u4",
@@ -59,7 +59,7 @@ export const DUMMY_USERS: AuthUser[] = [
     role: "finance",
     roleLabel: "Finance Officer",
     initials: "SL",
-    designation: "Finance Officer, TGMSIDC",
+    designation: "Finance Officer, HPC",
   },
   {
     id: "u5",

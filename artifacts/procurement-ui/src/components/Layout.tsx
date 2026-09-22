@@ -4,7 +4,8 @@ import {
   Truck, Users, Building2, Wrench, BarChart3, Bell, Menu,
   IndianRupee, Inbox, ClipboardList, Receipt, CreditCard, Layers, Merge,
   ChevronDown, LogOut, RefreshCw, Settings, ChevronRight,
-  PanelLeftClose, PanelLeftOpen,
+  PanelLeftClose, PanelLeftOpen, ShieldCheck,
+  Eye, Calendar, FlaskConical, ArrowRightLeft, TrendingUp, Activity,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Procurement",
     items: [
+      { href: "/rc-coverage", label: "RC Coverage", icon: ShieldCheck },
       { href: "/rate-contracts", label: "Rate Contracts", icon: FileCheck },
       { href: "/purchase-orders", label: "Purchase Orders", icon: ShoppingCart },
       { href: "/tenders", label: "Tenders", icon: Gavel },
@@ -51,6 +53,15 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/deliveries", label: "Deliveries & QA", icon: Truck },
       { href: "/grn", label: "GRN / Installation", icon: ClipboardList },
+    ],
+  },
+  {
+    label: "Inventory",
+    items: [
+      { href: "/stock-visibility", label: "Stock Visibility", icon: Eye },
+      { href: "/near-expiry", label: "Near-Expiry Monitor", icon: Calendar },
+      { href: "/quarantine", label: "Quarantine & QC", icon: FlaskConical },
+      { href: "/stock-transfers", label: "Stock Transfers", icon: ArrowRightLeft },
     ],
   },
   {
@@ -67,6 +78,13 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/institutions", label: "Institutions", icon: Building2 },
       { href: "/equipment", label: "Equipment Master", icon: Wrench },
       { href: "/reports", label: "Reports", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Analytics",
+    items: [
+      { href: "/demand-forecast", label: "Demand Forecast", icon: TrendingUp },
+      { href: "/kpi-dashboard", label: "KPI Dashboard", icon: Activity },
     ],
   },
   {
@@ -161,12 +179,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             collapsed ? "px-3 py-4 justify-center" : "gap-3 px-4 py-4"
           )}>
             <div className="h-8 w-8 rounded bg-sidebar-primary flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-xs">TG</span>
+              <span className="text-white font-bold text-xs">HP</span>
             </div>
             {!collapsed && (
               <div className="min-w-0 flex-1">
-                <div className="text-sidebar-foreground font-semibold text-sm leading-tight truncate">TGMSIDC</div>
-                <div className="text-sidebar-foreground/50 text-xs truncate">Procurement Portal</div>
+                <div className="text-sidebar-foreground font-semibold text-sm leading-tight truncate">Health Procurement</div>
+                <div className="text-sidebar-foreground/50 text-xs truncate">Portal</div>
               </div>
             )}
             {/* Desktop collapse/expand toggle */}

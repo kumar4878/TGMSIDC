@@ -107,9 +107,9 @@ const INIT_CERT: InstallationCertificate = {
 const INIT_GRNS: GRNRecord[] = [
   {
     id: 1,
-    grnNumber: "GRN/TGMSIDC/2026/001",
+    grnNumber: "GRN/HPC/2026/001",
     deliveryNoteNo: "SSA/0506/25-26",
-    poNumber: "441A/591/TGMSIDC/EQU/2025-26",
+    poNumber: "441A/591/HPC/EQU/2025-26",
     poId: 1,
     vendorName: "M/s. Sri Srinivasa Agencies",
     vendorGstin: "36ACWFS9933Q1ZO",
@@ -135,7 +135,7 @@ const INIT_GRNS: GRNRecord[] = [
       hospitalName: "Govt. General Hospital, Sangareddy",
       department: "Operation Theatre",
       supplierName: "M/s. Sri Srinivasa Agencies",
-      poNo: "441A/591/TGMSIDC/EQU/2025-26",
+      poNo: "441A/591/HPC/EQU/2025-26",
       poDate: "2026-01-11",
       invoiceNo: "SSA/INV/0506/25-26",
       invoiceDate: "2026-03-12",
@@ -170,9 +170,9 @@ const INIT_GRNS: GRNRecord[] = [
   },
   {
     id: 2,
-    grnNumber: "GRN/TGMSIDC/2022/002",
+    grnNumber: "GRN/HPC/2022/002",
     deliveryNoteNo: "GAMS/01650/22-23",
-    poNumber: "216/418/TGMSIDC/EQU/Vemulawada/2022-23",
+    poNumber: "216/418/HPC/EQU/Vemulawada/2022-23",
     poId: 2,
     vendorName: "M/s. Green Apple Medical Systems",
     vendorGstin: "36AADAG1234B1Z3",
@@ -230,9 +230,9 @@ const INIT_GRNS: GRNRecord[] = [
   },
   {
     id: 3,
-    grnNumber: "GRN/TGMSIDC/2026/003",
+    grnNumber: "GRN/HPC/2026/003",
     deliveryNoteNo: "",
-    poNumber: "IND/TGMSIDC/EQU/WDH/PO/2026/003",
+    poNumber: "IND/HPC/EQU/WDH/PO/2026/003",
     poId: 3,
     vendorName: "Nidek Medical India Pvt Ltd",
     vendorGstin: "29AABCN2345E1Z8",
@@ -464,7 +464,7 @@ function AnnexureForm({ cert, onChange }: { cert: InstallationCertificate; onCha
         <div className="space-y-1"><Label className="text-xs">6. DC No / Date</Label><div className="flex gap-1"><Input className="h-8 text-xs" value={cert.dcNo} onChange={e => set("dcNo", e.target.value)} placeholder="DC/..." /><Input type="date" className="h-8 text-xs" value={cert.dcDate} onChange={e => set("dcDate", e.target.value)} /></div></div>
         <div className="space-y-1"><Label className="text-xs">3. Supplier Name *</Label><Input className="h-8 text-xs" value={cert.supplierName} onChange={e => set("supplierName", e.target.value)} placeholder="M/s. Vendor Name" /></div>
         <div className="space-y-1"><Label className="text-xs">7. Installation Date *</Label><Input type="date" className="h-8 text-xs" value={cert.installationDate} onChange={e => set("installationDate", e.target.value)} /></div>
-        <div className="space-y-1 col-span-2"><Label className="text-xs">4. PO No / Date *</Label><div className="flex gap-1"><Input className="h-8 text-xs flex-1" value={cert.poNo} onChange={e => set("poNo", e.target.value)} placeholder="441A/591/TGMSIDC/EQU/2025-26" /><Input type="date" className="h-8 text-xs w-40" value={cert.poDate} onChange={e => set("poDate", e.target.value)} /></div></div>
+        <div className="space-y-1 col-span-2"><Label className="text-xs">4. PO No / Date *</Label><div className="flex gap-1"><Input className="h-8 text-xs flex-1" value={cert.poNo} onChange={e => set("poNo", e.target.value)} placeholder="441A/591/HPC/EQU/2025-26" /><Input type="date" className="h-8 text-xs w-40" value={cert.poDate} onChange={e => set("poDate", e.target.value)} /></div></div>
       </div>
 
       {/* Equipment Items */}
@@ -568,7 +568,7 @@ export default function GRN() {
   const [annexureForm, setAnnexureForm] = useState<InstallationCertificate>({ ...INIT_CERT });
 
   const [form, setForm] = useState({
-    poNumber: "441A/591/TGMSIDC/EQU/2025-26",
+    poNumber: "441A/591/HPC/EQU/2025-26",
     deliveryNoteNo: "",
     dispatchDocNo: "",
     dispatchedThrough: "",
@@ -605,19 +605,19 @@ export default function GRN() {
   }
 
   const PO_MAP: Record<string, { vendor: string; facility: string; equipment: string; orderedQty: number }> = {
-    "441A/591/TGMSIDC/EQU/2025-26": { vendor: "M/s. Sri Srinivasa Agencies", facility: "Govt. General Hospital, Sangareddy", equipment: "Surgical Diathermy / Cautery Machine (Sigma+)", orderedQty: 45 },
-    "216/418/TGMSIDC/EQU/Vemulawada/2022-23": { vendor: "M/s. Green Apple Medical Systems", facility: "Area Hospital, Vemulawada", equipment: "Mammogram Compatible CR System (Fuji Film)", orderedQty: 1 },
-    "IND/TGMSIDC/EQU/WDH/PO/2026/003": { vendor: "Nidek Medical India Pvt Ltd", facility: "Warangal District Hospital", equipment: "Fully Automated Biochemistry Analyser", orderedQty: 1 },
+    "441A/591/HPC/EQU/2025-26": { vendor: "M/s. Sri Srinivasa Agencies", facility: "Govt. General Hospital, Sangareddy", equipment: "Surgical Diathermy / Cautery Machine (Sigma+)", orderedQty: 45 },
+    "216/418/HPC/EQU/Vemulawada/2022-23": { vendor: "M/s. Green Apple Medical Systems", facility: "Area Hospital, Vemulawada", equipment: "Mammogram Compatible CR System (Fuji Film)", orderedQty: 1 },
+    "IND/HPC/EQU/WDH/PO/2026/003": { vendor: "Nidek Medical India Pvt Ltd", facility: "Warangal District Hospital", equipment: "Fully Automated Biochemistry Analyser", orderedQty: 1 },
   };
 
   function handleCreate() {
     const meta = PO_MAP[form.poNumber] ?? { vendor: "—", facility: "—", equipment: "—", orderedQty: 0 };
     const newGrn: GRNRecord = {
       id: grns.length + 1,
-      grnNumber: `GRN/TGMSIDC/2026/${String(grns.length + 1).padStart(3, "0")}`,
+      grnNumber: `GRN/HPC/2026/${String(grns.length + 1).padStart(3, "0")}`,
       deliveryNoteNo: form.deliveryNoteNo,
       poNumber: form.poNumber,
-      poId: form.poNumber === "441A/591/TGMSIDC/EQU/2025-26" ? 1 : form.poNumber === "216/418/TGMSIDC/EQU/Vemulawada/2022-23" ? 2 : 3,
+      poId: form.poNumber === "441A/591/HPC/EQU/2025-26" ? 1 : form.poNumber === "216/418/HPC/EQU/Vemulawada/2022-23" ? 2 : 3,
       vendorName: meta.vendor,
       vendorGstin: "—",
       facilityName: meta.facility,
@@ -646,7 +646,7 @@ export default function GRN() {
     setGrns(prev => [...prev, newGrn]);
     setAddOpen(false);
     setFormDocs([]);
-    setForm({ poNumber: "441A/591/TGMSIDC/EQU/2025-26", deliveryNoteNo: "", dispatchDocNo: "", dispatchedThrough: "", challanNo: "", receivedQty: "", receivedDate: "", condition: "good", receivedInGoodCondition: true, discrepancyNotes: "" });
+    setForm({ poNumber: "441A/591/HPC/EQU/2025-26", deliveryNoteNo: "", dispatchDocNo: "", dispatchedThrough: "", challanNo: "", receivedQty: "", receivedDate: "", condition: "good", receivedInGoodCondition: true, discrepancyNotes: "" });
   }
 
   function openAnnexure(grn: GRNRecord) {
@@ -784,9 +784,9 @@ export default function GRN() {
               <Select value={form.poNumber} onValueChange={v => setForm({ ...form, poNumber: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="441A/591/TGMSIDC/EQU/2025-26">441A/591/TGMSIDC/EQU/2025-26 — Surgical Diathermy (Sri Srinivasa Agencies)</SelectItem>
-                  <SelectItem value="216/418/TGMSIDC/EQU/Vemulawada/2022-23">216/418/TGMSIDC/EQU/Vemulawada/2022-23 — Mammogram CR (Green Apple Medical)</SelectItem>
-                  <SelectItem value="IND/TGMSIDC/EQU/WDH/PO/2026/003">IND/TGMSIDC/EQU/WDH/PO/2026/003 — Biochemistry Analyser (Nidek Medical)</SelectItem>
+                  <SelectItem value="441A/591/HPC/EQU/2025-26">441A/591/HPC/EQU/2025-26 — Surgical Diathermy (Sri Srinivasa Agencies)</SelectItem>
+                  <SelectItem value="216/418/HPC/EQU/Vemulawada/2022-23">216/418/HPC/EQU/Vemulawada/2022-23 — Mammogram CR (Green Apple Medical)</SelectItem>
+                  <SelectItem value="IND/HPC/EQU/WDH/PO/2026/003">IND/HPC/EQU/WDH/PO/2026/003 — Biochemistry Analyser (Nidek Medical)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

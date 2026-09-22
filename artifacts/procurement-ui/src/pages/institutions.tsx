@@ -46,7 +46,7 @@ export default function Institutions() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Institutions Master</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Medical facilities, hospitals, and PHCs across Telangana</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Medical facilities, hospitals, and PHCs across the state</p>
         </div>
         <Button size="sm" className="gap-2" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" />Add Institution</Button>
       </div>

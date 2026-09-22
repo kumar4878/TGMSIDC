@@ -42,9 +42,9 @@ const INIT_INVOICES: Invoice[] = [
   {
     id: 1,
     invoiceNumber: "SSA/INV/2025-26/0011",
-    poNumber: "441A/591/TGMSIDC/EQU/2025-26",
+    poNumber: "441A/591/HPC/EQU/2025-26",
     poId: 1,
-    grnNumber: "GRN/TGMSIDC/2026/001",
+    grnNumber: "GRN/HPC/2026/001",
     vendorName: "M/s. Sri Srinivasa Agencies",
     equipmentName: "Surgical Diathermy / Cautery Machine (Sigma+)",
     invoiceDate: "2026-03-16",
@@ -69,9 +69,9 @@ const INIT_INVOICES: Invoice[] = [
   {
     id: 2,
     invoiceNumber: "GAMS/01533/22-23",
-    poNumber: "216/418/TGMSIDC/EQU/Vemulawada/2022-23",
+    poNumber: "216/418/HPC/EQU/Vemulawada/2022-23",
     poId: 2,
-    grnNumber: "GRN/TGMSIDC/2022/002",
+    grnNumber: "GRN/HPC/2022/002",
     vendorName: "M/s. Green Apple Medical Systems",
     equipmentName: "Mammogram Compatible CR System (Fuji Film)",
     invoiceDate: "2022-11-02",
@@ -96,7 +96,7 @@ const INIT_INVOICES: Invoice[] = [
   {
     id: 3,
     invoiceNumber: "INV/NMI/2026/0112",
-    poNumber: "IND/TGMSIDC/EQU/WDH/PO/2026/003",
+    poNumber: "IND/HPC/EQU/WDH/PO/2026/003",
     poId: 3,
     grnNumber: "—",
     vendorName: "Nidek Medical India Pvt Ltd",
@@ -151,7 +151,7 @@ export default function Invoices() {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({
     invoiceNo: "", invoiceDate: "", amount: "",
-    poNumber: "441A/591/TGMSIDC/EQU/2025-26", grnNumber: "GRN/TGMSIDC/2026/001", notes: ""
+    poNumber: "441A/591/HPC/EQU/2025-26", grnNumber: "GRN/HPC/2026/001", notes: ""
   });
   const [attachments, setAttachments] = useState<DocAttachment[]>([]);
 
@@ -176,15 +176,15 @@ export default function Invoices() {
       id: invoices.length + 1,
       invoiceNumber: form.invoiceNo,
       poNumber: form.poNumber,
-      poId: form.poNumber === "441A/591/TGMSIDC/EQU/2025-26" ? 1 : form.poNumber === "216/418/TGMSIDC/EQU/Vemulawada/2022-23" ? 2 : 3,
+      poId: form.poNumber === "441A/591/HPC/EQU/2025-26" ? 1 : form.poNumber === "216/418/HPC/EQU/Vemulawada/2022-23" ? 2 : 3,
       grnNumber: form.grnNumber,
-      vendorName: form.poNumber === "441A/591/TGMSIDC/EQU/2025-26" ? "M/s. Sri Srinivasa Agencies" : form.poNumber === "216/418/TGMSIDC/EQU/Vemulawada/2022-23" ? "M/s. Green Apple Medical Systems" : "Nidek Medical India Pvt Ltd",
-      equipmentName: form.poNumber === "441A/591/TGMSIDC/EQU/2025-26" ? "Surgical Diathermy / Cautery Machine (Sigma+)" : form.poNumber === "216/418/TGMSIDC/EQU/Vemulawada/2022-23" ? "Mammogram Compatible CR System (Fuji Film)" : "Fully Automated Biochemistry Analyser",
+      vendorName: form.poNumber === "441A/591/HPC/EQU/2025-26" ? "M/s. Sri Srinivasa Agencies" : form.poNumber === "216/418/HPC/EQU/Vemulawada/2022-23" ? "M/s. Green Apple Medical Systems" : "Nidek Medical India Pvt Ltd",
+      equipmentName: form.poNumber === "441A/591/HPC/EQU/2025-26" ? "Surgical Diathermy / Cautery Machine (Sigma+)" : form.poNumber === "216/418/HPC/EQU/Vemulawada/2022-23" ? "Mammogram Compatible CR System (Fuji Film)" : "Fully Automated Biochemistry Analyser",
       invoiceDate: form.invoiceDate,
       invoiceAmount: parseFloat(form.amount) || 0,
-      poAmount: form.poNumber === "441A/591/TGMSIDC/EQU/2025-26" ? 582750 : form.poNumber === "216/418/TGMSIDC/EQU/Vemulawada/2022-23" ? 682500 : 1344000,
+      poAmount: form.poNumber === "441A/591/HPC/EQU/2025-26" ? 582750 : form.poNumber === "216/418/HPC/EQU/Vemulawada/2022-23" ? 682500 : 1344000,
       grnQty: 0,
-      poQty: form.poNumber === "441A/591/TGMSIDC/EQU/2025-26" ? 45 : 1,
+      poQty: form.poNumber === "441A/591/HPC/EQU/2025-26" ? 45 : 1,
       matchStatus: "pending",
       matchNotes: "3-way match pending verification",
       invoiceUploaded: hasInvoice,
@@ -198,7 +198,7 @@ export default function Invoices() {
     setInvoices(prev => [newInv, ...prev]);
     setAddOpen(false);
     setAttachments([]);
-    setForm({ invoiceNo: "", invoiceDate: "", amount: "", poNumber: "441A/591/TGMSIDC/EQU/2025-26", grnNumber: "GRN/TGMSIDC/2026/001", notes: "" });
+    setForm({ invoiceNo: "", invoiceDate: "", amount: "", poNumber: "441A/591/HPC/EQU/2025-26", grnNumber: "GRN/HPC/2026/001", notes: "" });
   }
 
   return (
@@ -363,9 +363,9 @@ export default function Invoices() {
               <Select value={form.poNumber} onValueChange={v => setForm({ ...form, poNumber: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="441A/591/TGMSIDC/EQU/2025-26">441A/591/TGMSIDC/EQU/2025-26 — Surgical Diathermy (Sri Srinivasa)</SelectItem>
-                  <SelectItem value="216/418/TGMSIDC/EQU/Vemulawada/2022-23">216/418/TGMSIDC/EQU/Vemulawada/2022-23 — Mammogram CR (Green Apple)</SelectItem>
-                  <SelectItem value="IND/TGMSIDC/EQU/WDH/PO/2026/003">IND/TGMSIDC/EQU/WDH/PO/2026/003 — Biochemistry Analyser (Nidek)</SelectItem>
+                  <SelectItem value="441A/591/HPC/EQU/2025-26">441A/591/HPC/EQU/2025-26 — Surgical Diathermy (Sri Srinivasa)</SelectItem>
+                  <SelectItem value="216/418/HPC/EQU/Vemulawada/2022-23">216/418/HPC/EQU/Vemulawada/2022-23 — Mammogram CR (Green Apple)</SelectItem>
+                  <SelectItem value="IND/HPC/EQU/WDH/PO/2026/003">IND/HPC/EQU/WDH/PO/2026/003 — Biochemistry Analyser (Nidek)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -374,9 +374,9 @@ export default function Invoices() {
               <Select value={form.grnNumber} onValueChange={v => setForm({ ...form, grnNumber: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="GRN/TGMSIDC/2026/001">GRN/TGMSIDC/2026/001 — Surgical Diathermy (Verified)</SelectItem>
-                  <SelectItem value="GRN/TGMSIDC/2022/002">GRN/TGMSIDC/2022/002 — Mammogram CR (Accepted)</SelectItem>
-                  <SelectItem value="GRN/TGMSIDC/2026/003">GRN/TGMSIDC/2026/003 — Biochemistry Analyser (Pending)</SelectItem>
+                  <SelectItem value="GRN/HPC/2026/001">GRN/HPC/2026/001 — Surgical Diathermy (Verified)</SelectItem>
+                  <SelectItem value="GRN/HPC/2022/002">GRN/HPC/2022/002 — Mammogram CR (Accepted)</SelectItem>
+                  <SelectItem value="GRN/HPC/2026/003">GRN/HPC/2026/003 — Biochemistry Analyser (Pending)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

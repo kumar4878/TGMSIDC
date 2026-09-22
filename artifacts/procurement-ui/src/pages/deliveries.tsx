@@ -63,7 +63,7 @@ export default function Deliveries() {
     serialBatchNos: "",
     vendorGstin: "",
     consigneeAddress: "",
-    buyerBillToAddress: "The Managing Director, TGMSIDC, Hyderabad, 2nd Floor, DM&HS Compound, Sultanbazar, Koti, HYDERABAD - 500095, GSTIN/UIN: 36AADAT9639G1Z2",
+    buyerBillToAddress: "The Managing Director, HPC, Hyderabad, 2nd Floor, DM&HS Compound, Sultanbazar, Koti, HYDERABAD - 500095, GSTIN/UIN: 36AADAT9639G1Z2",
   });
   const [docs, setDocs] = useState<DocAttachment[]>([]);
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -112,7 +112,7 @@ export default function Deliveries() {
       termsOfDelivery: "", vehicleNumber: "", dispatchDate: "", hsnSacCode: "",
       gstRate: "5", receivedInGoodCondition: true, dispatchNotes: "", serialBatchNos: "",
       vendorGstin: "", consigneeAddress: "",
-      buyerBillToAddress: "The Managing Director, TGMSIDC, Hyderabad, 2nd Floor, DM&HS Compound, Sultanbazar, Koti, HYDERABAD - 500095, GSTIN/UIN: 36AADAT9639G1Z2",
+      buyerBillToAddress: "The Managing Director, HPC, Hyderabad, 2nd Floor, DM&HS Compound, Sultanbazar, Koti, HYDERABAD - 500095, GSTIN/UIN: 36AADAT9639G1Z2",
     });
   }
 
@@ -320,14 +320,14 @@ export default function Deliveries() {
                     </div>
                     <p className="text-xs font-semibold">The Medical Superintendent</p>
                     <p className="text-xs text-muted-foreground">{detailDelivery.facilityName}</p>
-                    <p className="text-xs text-muted-foreground">Telangana</p>
+                    <p className="text-xs text-muted-foreground">State</p>
                   </div>
                   <div className="border rounded-lg p-3">
                     <div className="flex items-center gap-1.5 mb-2">
                       <Building2 className="h-3.5 w-3.5 text-emerald-600" />
                       <p className="text-xs font-semibold text-emerald-700">Buyer (Bill to)</p>
                     </div>
-                    <p className="text-xs font-semibold">The Managing Director, TGMSIDC, Hyderabad</p>
+                    <p className="text-xs font-semibold">The Managing Director, HPC, Hyderabad</p>
                     <p className="text-xs text-muted-foreground">2nd Floor, DM&HS Compound, Sultanbazar, Koti</p>
                     <p className="text-xs text-muted-foreground">HYDERABAD - 500095</p>
                     <p className="text-xs font-mono text-muted-foreground">GSTIN: 36AADAT9639G1Z2</p>
@@ -413,7 +413,7 @@ export default function Deliveries() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Buyer's Order No. (PO Ref.)</Label>
-                  <Input value={form.buyersOrderNo} onChange={e => setForm({ ...form, buyersOrderNo: e.target.value })} placeholder="441A/591/TGMSIDC/EQU/2025-26" />
+                  <Input value={form.buyersOrderNo} onChange={e => setForm({ ...form, buyersOrderNo: e.target.value })} placeholder="441A/591/HPC/EQU/2025-26" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Buyer's Order Date</Label>
@@ -438,10 +438,10 @@ export default function Deliveries() {
               <div className="space-y-1.5">
                 <Label>Consignee Address (Ship to)</Label>
                 <Textarea value={form.consigneeAddress} onChange={e => setForm({ ...form, consigneeAddress: e.target.value })} rows={2}
-                  placeholder="The Medical Superintendent, GGH, Sangareddy, Sangareddy - 502001, Medak Dist., Telangana" />
+                  placeholder="The Medical Superintendent, GGH, Sangareddy, Sangareddy - 502001, Medak Dist." />
               </div>
               <div className="space-y-1.5">
-                <Label>Buyer (Bill to) — TGMSIDC</Label>
+                <Label>Buyer (Bill to) — HPC</Label>
                 <Textarea value={form.buyerBillToAddress} onChange={e => setForm({ ...form, buyerBillToAddress: e.target.value })} rows={2} />
               </div>
               <div className="space-y-1.5">

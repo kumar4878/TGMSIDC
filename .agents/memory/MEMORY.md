@@ -1,0 +1,3 @@
+- [RC Coverage cross-referencing](rc-coverage-matching.md) — tenders don't have equipmentId; use equipmentName first-word match to link tenders↔equipment.
+- [Alert threshold is 180 days](brd-alert-thresholds.md) — BRD BR-09 mandates ≤180d expiry alerts (not 60d); tiered: ≤30d red, ≤90d orange, ≤180d amber.
+- [12-stage tender milestones](tender-milestones.md) — BRD FR-14 requires 12 stages; STATUS_TO_MILESTONE_IDX maps API statuses (technical_evaluation, awarded…) to stage indices.

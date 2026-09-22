@@ -36,7 +36,7 @@ interface Payment {
 const INIT_PAYMENTS: Payment[] = [
   {
     id: 1, paymentRef: "PAY-2026-0001", invoiceRef: "SSA/INV/2025-26/0011",
-    poNumber: "441A/591/TGMSIDC/EQU/2025-26",
+    poNumber: "441A/591/HPC/EQU/2025-26",
     vendorName: "M/s. Sri Srinivasa Agencies", equipmentName: "Surgical Diathermy / Cautery Machine (Sigma+)",
     tranche: "tranche1_90", totalPOValue: 582750, trancheAmount: 524475,
     status: "released", threeWayMatched: true, qpcUploaded: false, qpcApproved: false,
@@ -45,7 +45,7 @@ const INIT_PAYMENTS: Payment[] = [
   },
   {
     id: 2, paymentRef: "PAY-2026-0002", invoiceRef: "SSA/INV/2025-26/0011",
-    poNumber: "441A/591/TGMSIDC/EQU/2025-26",
+    poNumber: "441A/591/HPC/EQU/2025-26",
     vendorName: "M/s. Sri Srinivasa Agencies", equipmentName: "Surgical Diathermy / Cautery Machine (Sigma+)",
     tranche: "tranche2_10", totalPOValue: 582750, trancheAmount: 58275,
     status: "blocked", blockedReason: "Quality Performance Certificate (QPC) not yet submitted by GGH Sangareddy facility",
@@ -53,7 +53,7 @@ const INIT_PAYMENTS: Payment[] = [
   },
   {
     id: 3, paymentRef: "PAY-2022-0001", invoiceRef: "GAMS/01533/22-23",
-    poNumber: "216/418/TGMSIDC/EQU/Vemulawada/2022-23",
+    poNumber: "216/418/HPC/EQU/Vemulawada/2022-23",
     vendorName: "M/s. Green Apple Medical Systems", equipmentName: "Mammogram Compatible CR System (Fuji Film)",
     tranche: "tranche1_90", totalPOValue: 682500, trancheAmount: 614250,
     status: "released", threeWayMatched: true, qpcUploaded: true, qpcApproved: true,
@@ -62,7 +62,7 @@ const INIT_PAYMENTS: Payment[] = [
   },
   {
     id: 4, paymentRef: "PAY-2023-0002", invoiceRef: "GAMS/01533/22-23",
-    poNumber: "216/418/TGMSIDC/EQU/Vemulawada/2022-23",
+    poNumber: "216/418/HPC/EQU/Vemulawada/2022-23",
     vendorName: "M/s. Green Apple Medical Systems", equipmentName: "Mammogram Compatible CR System (Fuji Film)",
     tranche: "tranche2_10", totalPOValue: 682500, trancheAmount: 68250,
     status: "released", threeWayMatched: true, qpcUploaded: true, qpcApproved: true,
@@ -71,7 +71,7 @@ const INIT_PAYMENTS: Payment[] = [
   },
   {
     id: 5, paymentRef: "PAY-2026-0003", invoiceRef: "INV/NMI/2026/0112",
-    poNumber: "IND/TGMSIDC/EQU/WDH/PO/2026/003",
+    poNumber: "IND/HPC/EQU/WDH/PO/2026/003",
     vendorName: "Nidek Medical India Pvt Ltd", equipmentName: "Fully Automated Biochemistry Analyser",
     tranche: "tranche1_90", totalPOValue: 1344000, trancheAmount: 1209600,
     status: "pending", threeWayMatched: false, qpcUploaded: false, qpcApproved: false,
@@ -99,7 +99,7 @@ export default function Payments() {
   const [qpcRef, setQpcRef] = useState("");
   const [qpcFile, setQpcFile] = useState<{ name: string; size: string } | null>(null);
   const qpcFileRef = useRef<HTMLInputElement>(null);
-  const [newPayForm, setNewPayForm] = useState({ invoiceRef: "", poNumber: "441A/591/TGMSIDC/EQU/2025-26", tranche: "tranche1_90", amount: "", bankAccount: "", ifsc: "", bankName: "", paymentMode: "NEFT", notes: "" });
+  const [newPayForm, setNewPayForm] = useState({ invoiceRef: "", poNumber: "441A/591/HPC/EQU/2025-26", tranche: "tranche1_90", amount: "", bankAccount: "", ifsc: "", bankName: "", paymentMode: "NEFT", notes: "" });
 
   const filtered = payments.filter(p =>
     !search || p.paymentRef.toLowerCase().includes(search.toLowerCase()) || p.poNumber.toLowerCase().includes(search.toLowerCase()) || p.vendorName.toLowerCase().includes(search.toLowerCase())
@@ -122,9 +122,9 @@ export default function Payments() {
   }
 
   const PO_META: Record<string, { vendor: string; equipment: string; value: number }> = {
-    "441A/591/TGMSIDC/EQU/2025-26": { vendor: "M/s. Sri Srinivasa Agencies", equipment: "Surgical Diathermy / Cautery Machine (Sigma+)", value: 582750 },
-    "216/418/TGMSIDC/EQU/Vemulawada/2022-23": { vendor: "M/s. Green Apple Medical Systems", equipment: "Mammogram Compatible CR System (Fuji Film)", value: 682500 },
-    "IND/TGMSIDC/EQU/WDH/PO/2026/003": { vendor: "Nidek Medical India Pvt Ltd", equipment: "Fully Automated Biochemistry Analyser", value: 1344000 },
+    "441A/591/HPC/EQU/2025-26": { vendor: "M/s. Sri Srinivasa Agencies", equipment: "Surgical Diathermy / Cautery Machine (Sigma+)", value: 582750 },
+    "216/418/HPC/EQU/Vemulawada/2022-23": { vendor: "M/s. Green Apple Medical Systems", equipment: "Mammogram Compatible CR System (Fuji Film)", value: 682500 },
+    "IND/HPC/EQU/WDH/PO/2026/003": { vendor: "Nidek Medical India Pvt Ltd", equipment: "Fully Automated Biochemistry Analyser", value: 1344000 },
   };
 
   function handleCreatePayment() {
@@ -148,7 +148,7 @@ export default function Payments() {
     };
     setPayments(prev => [newP, ...prev]);
     setCreateOpen(false);
-    setNewPayForm({ invoiceRef: "", poNumber: "441A/591/TGMSIDC/EQU/2025-26", tranche: "tranche1_90", amount: "", bankAccount: "", ifsc: "", bankName: "", paymentMode: "NEFT", notes: "" });
+    setNewPayForm({ invoiceRef: "", poNumber: "441A/591/HPC/EQU/2025-26", tranche: "tranche1_90", amount: "", bankAccount: "", ifsc: "", bankName: "", paymentMode: "NEFT", notes: "" });
   }
 
   return (
@@ -357,9 +357,9 @@ export default function Payments() {
                 <Select value={newPayForm.poNumber} onValueChange={v => setNewPayForm({ ...newPayForm, poNumber: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="441A/591/TGMSIDC/EQU/2025-26">441A/591/… — Surgical Diathermy (Sri Srinivasa)</SelectItem>
-                    <SelectItem value="216/418/TGMSIDC/EQU/Vemulawada/2022-23">216/418/… — Mammogram CR (Green Apple)</SelectItem>
-                    <SelectItem value="IND/TGMSIDC/EQU/WDH/PO/2026/003">IND/…/WDH/PO/2026/003 — Biochemistry Analyser (Nidek)</SelectItem>
+                    <SelectItem value="441A/591/HPC/EQU/2025-26">441A/591/… — Surgical Diathermy (Sri Srinivasa)</SelectItem>
+                    <SelectItem value="216/418/HPC/EQU/Vemulawada/2022-23">216/418/… — Mammogram CR (Green Apple)</SelectItem>
+                    <SelectItem value="IND/HPC/EQU/WDH/PO/2026/003">IND/…/WDH/PO/2026/003 — Biochemistry Analyser (Nidek)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

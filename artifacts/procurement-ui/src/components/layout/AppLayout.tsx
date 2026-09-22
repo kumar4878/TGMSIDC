@@ -36,11 +36,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarHeader className="p-4 border-b border-sidebar-border">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded bg-sidebar-primary flex items-center justify-center font-bold text-sidebar-primary-foreground">
-                TG
+                HP
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold leading-none tracking-tight">TGMSIDC</span>
-                <span className="text-xs text-sidebar-foreground/70 leading-none">Procurement Portal</span>
+                <span className="text-sm font-bold leading-none tracking-tight">Health Procurement</span>
+                <span className="text-xs text-sidebar-foreground/70 leading-none">Portal</span>
               </div>
             </div>
           </SidebarHeader>

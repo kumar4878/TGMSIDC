@@ -38,8 +38,8 @@ const INIT_TENDERS: EProcTender[] = [
   {
     id: 1,
     tgmsidcRef: "TND-2025-0001",
-    eprocTenderId: "TG/TGMSIDC/2025-26/ET/0142",
-    tenderNoticeNo: "NIT/TGMSIDC/2025/0142",
+    eprocTenderId: "TG/HPC/2025-26/ET/0142",
+    tenderNoticeNo: "NIT/HPC/2025/0142",
     equipmentName: "Ultrasound Machine (B-Mode) — 3 Units",
     internalStatus: "Bids Received",
     eprocStatus: "Bid Submission Closed",
@@ -128,7 +128,7 @@ export default function TenderWorkbench() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
         <h1 className="text-2xl font-bold">Tender Workbench</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">eProcurement integration — Telangana State eProcurement Portal sync</p>
+        <p className="text-sm text-muted-foreground mt-0.5">eProcurement integration — State eProcurement Portal sync</p>
       </div>
 
       {/* Integration Banner */}
@@ -137,7 +137,7 @@ export default function TenderWorkbench() {
           <div className="flex items-start gap-3">
             <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-blue-800">Telangana eProcurement Integration</p>
+              <p className="text-sm font-semibold text-blue-800">eProcurement Integration</p>
               <p className="text-xs text-blue-700 mt-0.5">Tendering is executed on the Government eProcurement portal. This workbench syncs tender IDs, dates, bid counts and status milestones. Financial bid data is withheld until technical evaluation is complete per portal confidentiality rules.</p>
               <div className="flex gap-3 mt-2">
                 <a href="https://tender.telangana.gov.in" target="_blank" rel="noreferrer">
@@ -174,7 +174,7 @@ export default function TenderWorkbench() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/40">
-                  {["TGMSIDC Ref", "eProc Tender ID", "Equipment", "Status (eProc)", "Bids", "Last Sync", "Sync Status", "Actions"].map(h => (
+                  {["HPC Ref", "eProc Tender ID", "Equipment", "Status (eProc)", "Bids", "Last Sync", "Sync Status", "Actions"].map(h => (
                     <th key={h} className="text-left text-xs font-semibold text-muted-foreground px-4 py-3">{h}</th>
                   ))}
                 </tr>
@@ -283,7 +283,7 @@ export default function TenderWorkbench() {
                       { time: "08 Apr 2026 04:30", event: "Sync completed successfully", status: "success" },
                       { time: "07 Apr 2026 04:30", event: "Status updated: Bid Submission Closed → Technical Evaluation In Progress", status: "success" },
                       { time: "10 Nov 2025 11:15", event: "Status updated: Bid Submission Open → Bid Submission Closed", status: "success" },
-                      { time: "05 Oct 2025 09:00", event: "Tender linked to eProc ID TG/TGMSIDC/2025-26/ET/0142", status: "info" },
+                      { time: "05 Oct 2025 09:00", event: "Tender linked to eProc ID TG/HPC/2025-26/ET/0142", status: "info" },
                       { time: "01 Oct 2025 08:30", event: "Tender published on eProcurement portal", status: "success" },
                     ].map((log, i) => (
                       <div key={i} className="flex gap-3 text-xs">
@@ -305,15 +305,15 @@ export default function TenderWorkbench() {
           <DialogHeader><DialogTitle>Link to eProcurement Tender</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2 text-sm">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
-              Enter the Tender ID and Notice Number assigned by the Telangana eProcurement portal. The system will begin syncing status and milestone updates.
+              Enter the Tender ID and Notice Number assigned by the eProcurement portal. The system will begin syncing status and milestone updates.
             </div>
             <div className="space-y-1.5">
               <Label>eProcurement Tender ID</Label>
-              <Input value={linkForm.eprocId} onChange={e => setLinkForm({ ...linkForm, eprocId: e.target.value })} placeholder="TG/TGMSIDC/2025-26/ET/..." />
+              <Input value={linkForm.eprocId} onChange={e => setLinkForm({ ...linkForm, eprocId: e.target.value })} placeholder="TG/HPC/2025-26/ET/..." />
             </div>
             <div className="space-y-1.5">
               <Label>Tender Notice No.</Label>
-              <Input value={linkForm.noticeNo} onChange={e => setLinkForm({ ...linkForm, noticeNo: e.target.value })} placeholder="NIT/TGMSIDC/2025/..." />
+              <Input value={linkForm.noticeNo} onChange={e => setLinkForm({ ...linkForm, noticeNo: e.target.value })} placeholder="NIT/HPC/2025/..." />
             </div>
             <div className="space-y-1.5">
               <Label>Portal URL</Label>

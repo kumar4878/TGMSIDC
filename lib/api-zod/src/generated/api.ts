@@ -623,6 +623,12 @@ export const CreateTenderBody = zod.object({
   indentId: zod.number(),
   tenderInvitedDate: zod.string(),
   notes: zod.string().optional(),
+  equipmentName: zod
+    .string()
+    .optional()
+    .describe(
+      "Optional override for equipment name when creating a tender without an indent (e.g. from Coverage Dashboard)",
+    ),
 });
 
 /**

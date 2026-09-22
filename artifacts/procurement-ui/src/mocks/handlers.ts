@@ -315,7 +315,7 @@ export const handlers = [
       id: tenders.length + 1,
       tenderNumber: `TND-2025-${String(tenders.length + 1).padStart(4, "0")}`,
       indentId: Number(body.indentId),
-      equipmentName: indent?.equipmentName ?? "Unknown Equipment",
+      equipmentName: body.equipmentName ? String(body.equipmentName) : (indent?.equipmentName ?? "Unknown Equipment"),
       status: "invited",
       tenderInvitedDate: String(body.tenderInvitedDate ?? ""),
       bidsReceivedDate: null,

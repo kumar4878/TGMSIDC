@@ -70,11 +70,11 @@ const specsStore: Record<number, ProductTechSpecs> = {
     subcategory: "imaging",
     estimatedUnitRate: 850000,
     general: {
-      make: "Canon / Agfa / Toshiba (TGMSIDC approved makes)",
+      make: "Canon / Agfa / Toshiba (HPC approved makes)",
       model: "DR-1417 / CRXDI / similar",
       countryOfOrigin: "Japan / Germany",
       hsnCode: "90221400",
-      standardReference: "TGMSIDC Technical Standard TS-IMG-001",
+      standardReference: "HPC Technical Standard TS-IMG-001",
     },
     technical: {
       powerSupply: "220–240 V AC, 50 Hz, single phase",
@@ -130,7 +130,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "SERVO-i / HAMILTON-C1 / Evita / SV300 series",
       countryOfOrigin: "Germany / Switzerland / China",
       hsnCode: "90192000",
-      standardReference: "TGMSIDC Technical Standard TS-ICU-002",
+      standardReference: "HPC Technical Standard TS-ICU-002",
     },
     technical: {
       powerSupply: "100–240 V AC, 50/60 Hz; internal battery backup ≥ 4 hrs",
@@ -183,7 +183,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "AU480 / Dimension EXL / Cobas c311 / BS-480 series",
       countryOfOrigin: "USA / Germany / Japan / China",
       hsnCode: "90278090",
-      standardReference: "TGMSIDC Technical Standard TS-LAB-003",
+      standardReference: "HPC Technical Standard TS-LAB-003",
     },
     technical: {
       powerSupply: "220 V AC ± 10%, 50 Hz, single phase",
@@ -238,7 +238,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "LOGIQ E10 / Affiniti 50 / HM70A / DC-60 series",
       countryOfOrigin: "USA / Netherlands / Korea",
       hsnCode: "90181200",
-      standardReference: "TGMSIDC Technical Standard TS-IMG-004; PNDT Act 1994 compliant",
+      standardReference: "HPC Technical Standard TS-IMG-004; PNDT Act 1994 compliant",
     },
     technical: {
       powerSupply: "100–240 V AC, 50/60 Hz; integrated battery backup ≥ 1 hr",
@@ -295,7 +295,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "Horizon A / Discovery A / Prodigy series",
       countryOfOrigin: "USA",
       hsnCode: "90221400",
-      standardReference: "TGMSIDC Technical Standard TS-IMG-005; Rate Contract 2 years — TID 1A.67/TGMSIDC/EQU/2025-26",
+      standardReference: "HPC Technical Standard TS-IMG-005; Rate Contract 2 years — TID 1A.67/HPC/EQU/2025-26",
     },
     technical: {
       powerSupply: "220 V AC ± 10%, 50 Hz, single phase, 15A socket",
@@ -356,7 +356,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "Sigma+",
       countryOfOrigin: "India",
       hsnCode: "90189099",
-      standardReference: "RC/TGMSIDC/EQU/2025-26/0004; GSTIN: 36AADAT9639G1Z2",
+      standardReference: "RC/HPC/EQU/2025-26/0004; GSTIN: 36AADAT9639G1Z2",
     },
     technical: {
       powerSupply: "220–240 V AC, 50 Hz",
@@ -410,7 +410,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "FCR Prima T with DRY PIX Edge",
       countryOfOrigin: "Japan",
       hsnCode: "90221400",
-      standardReference: "RC/TGMSIDC/EQU/2025-26/0005",
+      standardReference: "RC/HPC/EQU/2025-26/0005",
     },
     technical: {
       powerSupply: "220 V AC, 50 Hz",
@@ -462,7 +462,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       model: "iMEC10 / IntelliVue MX450 / CARESCAPE B450 / BPL Ultima series",
       countryOfOrigin: "China / Netherlands / USA / India",
       hsnCode: "90189099",
-      standardReference: "TGMSIDC Technical Standard TS-ICU-008",
+      standardReference: "HPC Technical Standard TS-ICU-008",
     },
     technical: {
       powerSupply: "100–240 V AC, 50/60 Hz; internal rechargeable battery ≥ 4 hrs",
@@ -553,11 +553,11 @@ const specsStore: Record<number, ProductTechSpecs> = {
     subcategory: "patient_furniture",
     estimatedUnitRate: 55000,
     general: {
-      make: "Hospicare / Skanray / Reclined / Paramount (TGMSIDC approved)",
+      make: "Hospicare / Skanray / Reclined / Paramount (HPC approved)",
       model: "Semi-Electric 3-Function Hi-Lo Bed",
       countryOfOrigin: "India",
       hsnCode: "94021090",
-      standardReference: "IS 14238: 2019 (Hospital Beds), TGMSIDC TS-FUR-010",
+      standardReference: "IS 14238: 2019 (Hospital Beds), HPC TS-FUR-010",
     },
     technical: {
       powerSupply: "230V AC, 50Hz for electric functions; manual backup crank",
@@ -697,11 +697,11 @@ const specsStore: Record<number, ProductTechSpecs> = {
     subcategory: "renovation",
     estimatedUnitRate: 2500000,
     general: {
-      make: "TGMSIDC-empanelled Civil Contractors (Class I & above)",
+      make: "HPC-empanelled Civil Contractors (Class I & above)",
       model: "OT Complex Renovation Package",
       countryOfOrigin: "India",
       hsnCode: "99531290",
-      standardReference: "CPWD DSR 2023, MoHFW OT Guidelines 2023, TGMSIDC Civil TS-CIV-013",
+      standardReference: "CPWD DSR 2023, MoHFW OT Guidelines 2023, HPC Civil TS-CIV-013",
     },
     technical: {
       dimensions: "Scope: 2 OTs + scrub area + sterile corridor (approx. 450 sq.m)",
@@ -739,7 +739,7 @@ const specsStore: Record<number, ProductTechSpecs> = {
       "Bill of Quantities (BOQ) — CPWD DSR 2023",
       "Structural stability certificate (licensed structural engineer)",
       "HVAC commissioning report and HEPA filter test certificate",
-      "Completion certificate from TGMSIDC Engineer",
+      "Completion certificate from HPC Engineer",
     ],
   },
 };

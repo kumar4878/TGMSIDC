@@ -16,19 +16,24 @@ import { cn } from "@/lib/utils";
 import {
   TrendingUp, TrendingDown, Minus, Download, Printer, RefreshCw,
   BarChart3, IndianRupee, Truck, ShieldCheck, AlertTriangle, CheckCircle2,
-  FileText, Clock, Users, Activity,
+  FileText, Clock, Users, Activity, Gavel, XCircle, ShieldAlert,
 } from "lucide-react";
+import { differenceInDays, format } from "date-fns";
+import { mockEquipment, mockRateContracts, mockTenders, mockDistributionData } from "@/mocks/data";
 
 /* ── Period options ───────────────────────────── */
 const PERIODS = ["Apr–Jun 2025", "Jul–Sep 2025", "Oct–Dec 2025", "Jan–Mar 2026", "FY 2025-26"];
 
 /* ── Tabs ─────────────────────────────────────── */
 const TABS = [
-  { id: "overview",     label: "Executive Overview", icon: BarChart3 },
-  { id: "financial",   label: "Financial",          icon: IndianRupee },
-  { id: "procurement", label: "Procurement",        icon: FileText },
-  { id: "vendor",      label: "Vendor Scorecard",  icon: Users },
-  { id: "sla",         label: "SLA & Compliance",  icon: ShieldCheck },
+  { id: "overview",      label: "Executive Overview",  icon: BarChart3 },
+  { id: "financial",     label: "Financial",           icon: IndianRupee },
+  { id: "procurement",   label: "Procurement",         icon: FileText },
+  { id: "vendor",        label: "Vendor Scorecard",    icon: Users },
+  { id: "sla",           label: "SLA & Compliance",    icon: ShieldCheck },
+  { id: "rc_coverage",   label: "RC Coverage",         icon: ShieldCheck },
+  { id: "tender_tracker",label: "Tender Tracker",      icon: Gavel },
+  { id: "distribution",  label: "Distribution Analytics", icon: Truck },
 ];
 
 /* ── Chart colour palette ─────────────────────── */
@@ -704,7 +709,424 @@ function SlaTab({ sla }: any) {
   );
 }
 
+/* ─────────── RC Coverage Tab ──────────────────── */
+function RCCoverageTab() {
+  const today = new Date();
+
+  const rows = mockEquipment.map((eq) => {
+    const itemRCs = mockRateContracts.filter((rc) => rc.equipmentId === eq.id);
+    const activeRC = itemRCs.find((rc) => rc.status === "active" && new Date(rc.endDate) > today);
+    const expiredRC = itemRCs
+      .filter((rc) => new Date(rc.endDate) <= today)
+      .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())[0];
+    const activeTender = mockTenders.find((t) => {
+      const first = eq.name.toLowerCase().split(" ")[0];
+      return t.equipmentName.toLowerCase().includes(first) && t.status !== "rc_created" && t.status !== "awarded";
+    });
+
+    let status: "active_rc" | "expiring_soon" | "expired" | "tender_in_progress" | "no_coverage";
+    let daysLeft: number | null = null;
+    let rcNum: string | null = null;
+    let expiry: string | null = null;
+
+    if (activeRC) {
+      daysLeft = differenceInDays(new Date(activeRC.endDate), today);
+      status = daysLeft <= 180 ? "expiring_soon" : "active_rc";
+      rcNum = activeRC.contractNumber;
+      expiry = activeRC.endDate;
+    } else if (activeTender) {
+      status = "tender_in_progress";
+    } else if (expiredRC) {
+      status = "expired";
+      rcNum = expiredRC.contractNumber;
+      expiry = expiredRC.endDate;
+      daysLeft = differenceInDays(new Date(expiredRC.endDate), today);
+    } else {
+      status = "no_coverage";
+    }
+    return { eq, status, rcNum, expiry, daysLeft };
+  });
+
+  const counts = {
+    active:   rows.filter(r => r.status === "active_rc").length,
+    expiring: rows.filter(r => r.status === "expiring_soon").length,
+    expired:  rows.filter(r => r.status === "expired").length,
+    tender:   rows.filter(r => r.status === "tender_in_progress").length,
+    none:     rows.filter(r => r.status === "no_coverage").length,
+  };
+
+  const expiryBuckets = [
+    { label: "≤ 30 days", count: rows.filter(r => r.daysLeft != null && r.daysLeft >= 0 && r.daysLeft <= 30).length, color: C.rose },
+    { label: "31–90 days", count: rows.filter(r => r.daysLeft != null && r.daysLeft > 30 && r.daysLeft <= 90).length, color: C.orange },
+    { label: "91–180 days", count: rows.filter(r => r.daysLeft != null && r.daysLeft > 90 && r.daysLeft <= 180).length, color: C.amber },
+    { label: "> 180 days", count: rows.filter(r => r.daysLeft != null && r.daysLeft > 180).length, color: C.emerald },
+  ];
+
+  const STATUS_STYLE: Record<string, string> = {
+    active_rc: "text-emerald-700 bg-emerald-50",
+    expiring_soon: "text-amber-700 bg-amber-50",
+    expired: "text-red-700 bg-red-50",
+    tender_in_progress: "text-blue-700 bg-blue-50",
+    no_coverage: "text-slate-500 bg-slate-50",
+  };
+  const STATUS_LABEL: Record<string, string> = {
+    active_rc: "Active RC", expiring_soon: "Expiring Soon", expired: "Expired",
+    tender_in_progress: "Tender in Progress", no_coverage: "No Coverage",
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {[
+          { label: "Active RC", val: counts.active, color: C.emerald },
+          { label: "Expiring ≤180d", val: counts.expiring, color: C.amber },
+          { label: "Expired", val: counts.expired, color: C.rose },
+          { label: "Tender in Progress", val: counts.tender, color: C.blue },
+          { label: "No Coverage", val: counts.none, color: C.slate },
+        ].map(k => (
+          <Card key={k.label}>
+            <CardContent className="p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{k.label}</p>
+              <p className="text-3xl font-bold mt-1" style={{ color: k.color }}>{k.val}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader><CardTitle className="text-sm">Coverage Status Distribution</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie data={[
+                  { name: "Active RC", value: counts.active, fill: C.emerald },
+                  { name: "Expiring Soon", value: counts.expiring, fill: C.amber },
+                  { name: "Expired", value: counts.expired, fill: C.rose },
+                  { name: "Tender in Progress", value: counts.tender, fill: C.blue },
+                  { name: "No Coverage", value: counts.none, fill: C.slate },
+                ]} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`} labelLine={false}>
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-sm">Expiry Forecast (Active RCs)</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={expiryBuckets} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" name="RCs">
+                  {expiryBuckets.map((b) => <Cell key={b.label} fill={b.color} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader><CardTitle className="text-sm">Item-wise RC Coverage (RPT-01 / RPT-03)</CardTitle></CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/40">
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Item Code</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Item Name</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">RC Status</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">RC Number</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Expiry Date</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Days Remaining</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(({ eq, status, rcNum, expiry, daysLeft }) => (
+                  <tr key={eq.id} className="border-b hover:bg-muted/20">
+                    <td className="px-4 py-2.5 font-mono text-xs text-primary">{eq.equipmentCode}</td>
+                    <td className="px-4 py-2.5 font-medium text-sm">{eq.name}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium", STATUS_STYLE[status])}>
+                        {STATUS_LABEL[status]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 font-mono text-xs">{rcNum ?? "—"}</td>
+                    <td className="px-4 py-2.5 text-sm">
+                      {expiry ? format(new Date(expiry), "dd MMM yyyy") : "—"}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      {daysLeft != null ? (
+                        <span className={cn("font-semibold tabular-nums text-sm",
+                          daysLeft < 0 ? "text-red-600" : daysLeft <= 90 ? "text-amber-600" : "text-emerald-600"
+                        )}>
+                          {daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : `${daysLeft}d`}
+                        </span>
+                      ) : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ─────────── Tender Tracker Tab ────────────────── */
+function TenderTrackerTab() {
+  const today = new Date();
+
+  const STATUS_IDX: Record<string, number> = {
+    planning: 0, doc_prep: 1, approval: 2, invited: 3, pre_bid: 4, bids_received: 5,
+    bid_query: 6, technical_eval: 7, technical_evaluation: 7, commercial_eval: 8,
+    l1_identified: 9, awarded: 9, contract_final: 10, rc_created: 11,
+  };
+  const STAGE_LABELS = [
+    "Planning","Doc Prep","Approval","Publication","Pre-Bid","Bid Receipt",
+    "Query Handling","Tech Eval","Comm. Eval","L1 Award","Contract Final","RC Created",
+  ];
+
+  const tenderRows = mockTenders.map((t) => {
+    const stageIdx = STATUS_IDX[t.status] ?? 0;
+    const totalDays = t.createdAt ? differenceInDays(today, new Date(t.createdAt)) : null;
+    const lastUpdateDays = t.updatedAt ? differenceInDays(today, new Date(t.updatedAt)) : null;
+    const isDelayed = totalDays != null && totalDays > 180;
+    return { t, stageIdx, totalDays, lastUpdateDays, isDelayed };
+  });
+
+  const tendersByStage = STAGE_LABELS.map((label, i) => ({
+    stage: label,
+    count: tenderRows.filter(r => r.stageIdx === i).length,
+  }));
+
+  const delayed = tenderRows.filter(r => r.isDelayed).length;
+  const inProgress = tenderRows.filter(r => r.stageIdx < 11).length;
+  const completed = tenderRows.filter(r => r.stageIdx >= 11).length;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-3 gap-4">
+        <Card><CardContent className="p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Total Tenders</p>
+          <p className="text-3xl font-bold mt-1 text-blue-600">{tenderRows.length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">In Progress</p>
+          <p className="text-3xl font-bold mt-1 text-amber-600">{inProgress}</p>
+        </CardContent></Card>
+        <Card><CardContent className="p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Delayed (&gt;180d)</p>
+          <p className="text-3xl font-bold mt-1 text-red-600">{delayed}</p>
+        </CardContent></Card>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader><CardTitle className="text-sm">Tenders by Stage (12-Stage BRD)</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={tendersByStage} layout="vertical" margin={{ left: 80, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
+                <YAxis dataKey="stage" type="category" tick={{ fontSize: 9 }} width={80} />
+                <Tooltip />
+                <Bar dataKey="count" name="Tenders" fill={C.blue} radius={[0, 3, 3, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-sm">Tender Ageing (RPT-05)</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={[
+                { bucket: "0–30d",   count: tenderRows.filter(r => r.totalDays != null && r.totalDays <= 30).length },
+                { bucket: "31–90d",  count: tenderRows.filter(r => r.totalDays != null && r.totalDays > 30 && r.totalDays <= 90).length },
+                { bucket: "91–180d", count: tenderRows.filter(r => r.totalDays != null && r.totalDays > 90 && r.totalDays <= 180).length },
+                { bucket: ">180d",   count: tenderRows.filter(r => r.totalDays != null && r.totalDays > 180).length },
+              ]} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="bucket" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" name="Tenders" fill={C.indigo} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader><CardTitle className="text-sm">Tender Progress Register (RPT-04 / RPT-05)</CardTitle></CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/40">
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Tender No.</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Equipment</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Current Stage</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Stage Progress</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Total Ageing</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Last Activity</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tenderRows.map(({ t, stageIdx, totalDays, lastUpdateDays, isDelayed }) => (
+                  <tr key={t.id} className={cn("border-b hover:bg-muted/20", isDelayed && "bg-red-50/40")}>
+                    <td className="px-4 py-2.5 font-mono text-xs text-primary">{t.tenderNumber}</td>
+                    <td className="px-4 py-2.5 font-medium">{t.equipmentName}</td>
+                    <td className="px-4 py-2.5">
+                      <span className="text-xs font-medium">{STAGE_LABELS[stageIdx]}</span>
+                      <span className="text-[10px] text-muted-foreground ml-1">({stageIdx + 1}/12)</span>
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex gap-0.5">
+                        {STAGE_LABELS.map((_, i) => (
+                          <div key={i} className={cn("h-1.5 w-2.5 rounded-sm", i <= stageIdx ? "bg-primary" : "bg-muted")} />
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5">
+                      {totalDays != null ? (
+                        <span className={cn("font-semibold tabular-nums text-xs", isDelayed ? "text-red-600" : totalDays > 90 ? "text-amber-600" : "text-foreground")}>
+                          {totalDays}d {isDelayed ? "⚠ Delayed" : ""}
+                        </span>
+                      ) : "—"}
+                    </td>
+                    <td className="px-4 py-2.5 text-xs text-muted-foreground">
+                      {lastUpdateDays != null ? `${lastUpdateDays}d ago` : "—"}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium",
+                        stageIdx >= 11 ? "bg-emerald-50 text-emerald-700" :
+                        isDelayed ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                      )}>
+                        {stageIdx >= 11 ? "Completed" : isDelayed ? "Delayed" : "Active"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 /* ─────────── Main page ─────────────────────────── */
+/* ─────────── Distribution Analytics Tab ────────── */
+function DistributionTab() {
+  const [itemFilter, setItemFilter] = useState("all");
+  const items = [...new Set(mockDistributionData.map(d => d.itemName))];
+  const filtered = itemFilter === "all" ? mockDistributionData : mockDistributionData.filter(d => d.itemName === itemFilter);
+
+  const totalProcured = filtered.reduce((s, d) => s + d.procured, 0);
+  const totalDistributed = filtered.reduce((s, d) => s + d.distributed, 0);
+  const totalExpired = filtered.reduce((s, d) => s + d.expired, 0);
+  const totalWasted = filtered.reduce((s, d) => s + d.wasted, 0);
+  const wasteRate = totalProcured > 0 ? ((totalExpired + totalWasted) / totalProcured * 100).toFixed(1) : "0";
+  const utilRate = totalProcured > 0 ? (totalDistributed / totalProcured * 100).toFixed(1) : "0";
+
+  const chartData = [...new Map(filtered.map(d => [d.facilityName, d])).values()].map(d => ({
+    name: d.facilityName.split(",")[0].replace("Govt. General Hospital", "GGH"),
+    Distributed: d.distributed,
+    "Near-Expiry": d.nearExpiry,
+    Expired: d.expired,
+  }));
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard title="Total Procured" value={totalProcured.toLocaleString()} sub={filtered[0]?.unit ?? ""} trend={0} icon={FileText} color={C.blue} />
+        <StatCard title="Total Distributed" value={totalDistributed.toLocaleString()} sub="To facilities" trend={+3} trendGood="up" icon={Truck} color={C.emerald} />
+        <StatCard title="Distribution Rate" value={`${utilRate}%`} sub="vs procured" trend={+2} trendGood="up" icon={CheckCircle2} color={C.sky} />
+        <StatCard title="Expiry / Wastage Rate" value={`${wasteRate}%`} sub="of total procured" trend={-1} trendGood="down" icon={AlertTriangle} color={C.rose} />
+      </div>
+
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-muted-foreground">Filter by item:</span>
+        <div className="flex gap-1.5">
+          <button onClick={() => setItemFilter("all")} className={cn("px-3 py-1 rounded-full text-xs font-medium border", itemFilter === "all" ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-foreground/30")}>All Items</button>
+          {items.map(item => (
+            <button key={item} onClick={() => setItemFilter(item)} className={cn("px-3 py-1 rounded-full text-xs font-medium border", itemFilter === item ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-foreground/30")}>
+              {item.split("(")[0].trim()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Facility-wise Distribution — {itemFilter === "all" ? "All Items" : itemFilter}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={chartData} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip content={<ChartTooltip />} />
+              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+              <Bar dataKey="Distributed" fill={C.emerald} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="Near-Expiry" fill={C.amber} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="Expired" fill={C.rose} radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Facility Distribution Register</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/30 text-xs text-muted-foreground">
+                {["Facility", "District", "Item", "Procured", "Received", "Distributed", "Stock On Hand", "Near-Expiry", "Expired", "Wasted", "Waste %"].map(h => (
+                  <th key={h} className="text-left px-4 py-2 font-medium">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((d, i) => {
+                const wasteP = d.procured > 0 ? ((d.expired + d.wasted) / d.procured * 100).toFixed(1) : "0";
+                const wasteNum = parseFloat(wasteP);
+                return (
+                  <tr key={i} className="border-t hover:bg-muted/20">
+                    <td className="px-4 py-2.5 font-medium text-xs">{d.facilityName}</td>
+                    <td className="px-4 py-2.5 text-xs text-muted-foreground">{d.district}</td>
+                    <td className="px-4 py-2.5 text-xs">{d.itemName.split("(")[0].trim()}</td>
+                    {[d.procured, d.received, d.distributed, d.stockOnHand, d.nearExpiry, d.expired, d.wasted].map((v, vi) => (
+                      <td key={vi} className="px-4 py-2.5 text-right text-xs font-medium">{v}</td>
+                    ))}
+                    <td className={cn("px-4 py-2.5 text-right text-xs font-bold", wasteNum > 5 ? "text-red-600" : wasteNum > 2 ? "text-amber-600" : "text-emerald-700")}>
+                      {wasteP}%
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function Reports() {
   const [tab, setTab] = useState("overview");
   const [period, setPeriod] = useState("FY 2025-26");
@@ -719,7 +1141,7 @@ export default function Reports() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Reports &amp; Analytics</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Enterprise procurement intelligence — TGMSIDC FY 2025-26</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Enterprise procurement intelligence — FY 2025-26</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap shrink-0">
           {/* Period selector */}
@@ -774,11 +1196,14 @@ export default function Reports() {
       </div>
 
       {/* Tab content */}
-      {tab === "overview"     && <OverviewTab     pipeline={pipeline} sla={sla} />}
-      {tab === "financial"    && <FinancialTab />}
-      {tab === "procurement"  && <ProcurementTab />}
-      {tab === "vendor"       && <VendorTab />}
-      {tab === "sla"          && <SlaTab sla={sla} />}
+      {tab === "overview"       && <OverviewTab     pipeline={pipeline} sla={sla} />}
+      {tab === "financial"      && <FinancialTab />}
+      {tab === "procurement"    && <ProcurementTab />}
+      {tab === "vendor"         && <VendorTab />}
+      {tab === "sla"            && <SlaTab sla={sla} />}
+      {tab === "rc_coverage"    && <RCCoverageTab />}
+      {tab === "tender_tracker" && <TenderTrackerTab />}
+      {tab === "distribution"   && <DistributionTab />}
     </div>
   );
 }

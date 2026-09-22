@@ -191,6 +191,8 @@ export interface CreateTenderBody {
   indentId: number;
   tenderInvitedDate: string;
   notes?: string;
+  /** Optional override for equipment name when creating a tender without an indent (e.g. from Coverage Dashboard) */
+  equipmentName?: string;
 }
 
 export interface UpdateTenderBody {

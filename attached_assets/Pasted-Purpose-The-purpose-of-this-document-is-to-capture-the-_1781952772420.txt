@@ -1,0 +1,473 @@
+Purpose
+The purpose of this document is to capture the business requirements for strengthening Procurement and Rate Contract (RC) Management in a generic inventory/procurement management system.
+This requirement document specifically addresses the following challenges:
+
+Monitoring of Rate Contracts (RCs) for essential medicines / products in the item master
+Advance visibility and alerts for expiring RCs
+Digitized tender lifecycle tracking and visibility on tender progress/sub-stages
+
+
+3. Business Context
+Organizations managing procurement of medicines, healthcare products, or other essential items often face significant challenges in maintaining visibility over Rate Contracts and tender activities.
+Typical issues include:
+
+Active rate contracts may be available only for a subset of the required item list
+The current system may not clearly show:
+
+which products have active RCs
+which products do not have RCs
+which RCs are nearing expiry
+which products are covered through tender activity
+
+
+Users may currently depend on:
+
+reviewing external systems / portals
+checking physical or scanned RC documents
+following up manually with procurement teams
+
+
+Advance alerting for expiring RCs may be absent
+Tender processing may take several months and multiple tenders may run in parallel
+There may be no clear visibility into tender stages, sub-stages, ownership, delays, or ageing
+Tender records may not be fully digitized for tracking and monitoring
+
+These issues lead to delayed renewals, insufficient procurement visibility, weak planning, and reduced control over the procurement lifecycle.
+
+4. Objective
+The solution shall provide a centralized mechanism to:
+
+monitor RC availability across all relevant essential items / products
+track RC validity and expiry dates
+generate alerts at least 6 months before RC expiry
+provide dashboard and exception views for items without active RCs
+digitize tender records and monitor tender stage/sub-stage movement
+improve management visibility over procurement progress, delays, and risks
+
+
+5. Scope
+5.1 In Scope
+This requirement document includes:
+
+item-wise RC tracking
+RC availability monitoring
+RC validity and expiry management
+automated RC expiry alerts
+tender master creation and maintenance
+tender stage and sub-stage tracking
+tender ageing and delay monitoring
+reports and dashboards for review and decision-making
+
+5.2 Out of Scope
+The following are not part of this requirement document:
+
+vendor payment processing
+full e-procurement publishing platform functionality
+bid evaluation automation
+contract negotiation workflows
+legal drafting automation
+modification of external procurement or rate contract portals
+
+
+6. Stakeholders / User Roles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+RoleResponsibilityProcurement OfficerMaintain RC records, review RC gaps, initiate procurement actionTender OfficerCreate and update tender records and stage movementProcurement Manager / ReviewerMonitor RC coverage, expiries, and tender progressAdministrative UserConfigure master data, alert thresholds, and role accessManagement / LeadershipReview dashboards, exception reports, and delayed procurement activity
+
+7. Business Requirements
+
+7.1 Requirement Area 1: Monitoring of Rate Contracts (RCs)
+Business Need
+A centralized view is required to monitor rate contracts for all essential medicines / products in the item master, including clear distinction between items with active RCs and those without active RCs.
+Requirement Statements
+BR-01
+The system shall maintain and display the complete list of essential items / products for procurement tracking.
+BR-02
+The system shall allow mapping of rate contracts to individual items or product variants.
+BR-03
+The system shall clearly identify and display the procurement status of each item as one of the following:
+
+Active RC Available
+RC Not Available
+RC Expiring Soon
+RC Expired
+Tender in Progress
+
+BR-04
+The system shall provide a dashboard showing:
+
+total tracked items
+count of items with active RC
+count of items without RC
+count of items with RC nearing expiry
+count of items with expired RC
+count of items where tender is in progress
+
+BR-05
+Users shall be able to search and filter RC status by:
+
+item name
+item code
+RC status
+expiry date
+vendor / supplier
+tender reference
+
+BR-06
+Users shall be able to view RC details for a selected item, including:
+
+RC number
+issue date
+effective date
+expiry date
+vendor details
+covered item details
+uploaded RC document
+
+
+7.2 Requirement Area 2: Expiring RCs and Lack of Advance Alerts
+Business Need
+RC expiry dates are often checked manually through external systems or stored documents. The system must proactively identify expiring contracts and provide alerts at least 6 months in advance to support timely renewal or tendering action.
+Requirement Statements
+BR-07
+The system shall maintain RC issue date, effective date, and expiry date for each rate contract.
+BR-08
+The system shall automatically monitor RC expiry dates on a scheduled basis.
+BR-09
+The system shall generate alerts for RCs approaching expiry at least 180 days (6 months) before the expiry date.
+BR-10
+The system shall support additional configurable alert intervals such as:
+
+120 days before expiry
+90 days before expiry
+60 days before expiry
+30 days before expiry
+expired status alert
+
+BR-11
+The system shall display expiring RCs in dashboard and worklist views for user action.
+BR-12
+Alerts shall include:
+
+item name
+item code
+RC number
+expiry date
+number of days remaining
+linked vendor
+current tender / renewal status, if any
+
+BR-13
+The system shall highlight RCs where no tender or renewal action has been initiated despite nearing expiry.
+BR-14
+The system shall support escalation or priority highlighting for RCs that are close to expiry and still have no procurement action initiated.
+
+7.3 Requirement Area 3: Long Procurement Cycle and Limited Visibility on Tender Progress
+Business Need
+Tender processing can take several months, and multiple tenders may run in parallel. There is a need for digitized tender records, sub-stage visibility, and ageing/delay monitoring.
+Requirement Statements
+BR-15
+The system shall allow digitized creation and maintenance of tender master records.
+BR-16
+Each tender record shall be linkable to one or more items/products.
+BR-17
+The system shall enable tracking of each tender through predefined stages and sub-stages.
+BR-18
+The system shall provide visibility into the current stage and sub-stage of each tender.
+BR-19
+The system shall support simultaneous monitoring of multiple active tenders.
+BR-20
+The system shall capture and display ageing for each tender, including:
+
+date of initiation
+current stage start date
+days spent in current stage
+total tender duration
+
+BR-21
+The system shall identify delayed tenders or stages that exceed expected timelines.
+BR-22
+The system shall allow uploading and maintenance of digitized tender documents, such as:
+
+tender file
+approvals
+bidder clarification documents
+corrigendum documents
+evaluation documents
+award / contract documents
+
+BR-23
+The system shall provide a dashboard/worklist showing all ongoing tenders with:
+
+tender reference number
+linked items
+current stage
+current sub-stage
+pending with
+ageing
+expected next action
+
+
+8. Functional Requirements
+
+8.1 Item Master & RC Management
+FR-01
+The system shall maintain an item master for all essential products / medicines / materials under procurement management.
+FR-02
+The system shall allow creation, update, and maintenance of Rate Contract master records.
+FR-03
+Each RC record shall include at minimum:
+
+RC number
+RC issue date
+effective date
+expiry date
+vendor / supplier
+item(s) covered
+document attachment
+remarks
+active/inactive status
+
+FR-04
+The system shall map one or more RCs to items in the item master.
+FR-05
+The system shall derive item-wise RC status using business logic:
+
+valid RC exists → Active RC Available
+no RC exists → RC Not Available
+RC exists and expiry threshold reached → RC Expiring Soon
+RC expiry date passed → RC Expired
+no active RC but tender ongoing → Tender in Progress
+
+
+8.2 RC Expiry Monitoring and Alerts
+FR-06
+A scheduled job/process shall run daily to check RC expiry dates.
+FR-07
+The system shall generate automated alerts for expiring contracts at configured intervals beginning at 180 days before expiry.
+FR-08
+The system shall show a dedicated worklist for:
+
+expiring RCs
+expired RCs
+RCs without renewal action
+uncovered items
+
+FR-09
+The system shall support role-based access to alerts and worklists.
+FR-10
+The system shall enable visual prioritization of critical RCs nearing expiry.
+
+8.3 Tender Management and Monitoring
+FR-11
+The system shall allow creation of tender master records with:
+
+tender ID / reference
+tender description
+initiation date
+linked item(s)
+tender owner
+current stage
+current sub-stage
+status
+remarks
+
+FR-12
+The system shall maintain tender stage and sub-stage history.
+FR-13
+The system shall support stage/sub-stage configuration by admin.
+FR-14
+Suggested tender stages shall include:
+
+Tender Planning
+Document Preparation
+Approval for Tender
+Publication
+Bid Receipt
+Bid Query Handling
+Technical Evaluation
+Commercial Evaluation
+Approval / Recommendation
+Award / LOI
+Contract Finalization
+RC Creation / Closure
+
+FR-15
+The system shall capture stage movement date and user details for audit and monitoring.
+FR-16
+The system shall calculate:
+
+stage-wise ageing
+total tender ageing
+overdue stage duration
+
+FR-17
+The system shall allow upload and storage of tender-related documents.
+FR-18
+The system shall allow linking of expiring/uncovered items with:
+
+a new tender
+an existing tender in progress
+
+
+9. User Interface Requirements
+
+9.1 RC Coverage Dashboard
+The system shall provide a dashboard displaying:
+
+total tracked items
+active RC count
+RC not available count
+RC expiring in next 6 months
+RC expired count
+items under tender
+
+Grid View Fields
+
+item code
+item name
+RC number
+RC status
+expiry date
+days remaining
+vendor
+tender status
+
+
+9.2 RC Detail Screen
+The system shall provide a screen to view/manage:
+
+RC details
+mapped items
+expiry date
+document upload
+linked tender details
+
+
+9.3 Expiry Alert Worklist
+The system shall provide a worklist for:
+
+RCs expiring in 180 days
+RCs expiring in 90 days
+RCs expiring in 30 days
+expired RCs
+RCs with no renewal action
+
+
+9.4 Tender Tracker Dashboard
+The system shall provide a dashboard showing:
+
+tender ID
+tender description
+linked items
+current stage
+current sub-stage
+ageing in current stage
+total ageing
+pending with
+status
+
+
+9.5 Tender Detail Screen
+The system shall provide a tender detail page with:
+
+tender master details
+stage history
+uploaded documents
+remarks/history log
+linked RC / items
+pending action and responsibility
+
+
+10. Reports
+The system shall provide the following reports:
+RPT-01: RC Coverage Report
+Shows item-wise RC availability across all tracked products.
+RPT-02: RC Expiry Forecast Report
+Shows RCs expiring within:
+
+next 6 months
+next 3 months
+next 1 month
+
+RPT-03: Uncovered Items Report
+Shows items without active RC and without active tender.
+RPT-04: Tender Progress Report
+Shows all active tenders with stage, sub-stage, ageing, and pending section.
+RPT-05: Delayed Tender Report
+Shows tenders/stages delayed beyond expected timeline.
+RPT-06: Item-wise Procurement Status Report
+Shows each item’s procurement status:
+
+active RC
+expiring RC
+expired RC
+tender in progress
+no coverage
+
+
+11. Notifications and Alerts
+The system shall support the following notifications:
+
+RC entering 180-day expiry window
+RC entering 90-day expiry window
+RC entering 30-day expiry window
+RC expired
+item has no active RC
+item has no active RC and no tender
+tender pending in a stage beyond configured threshold
+tender completed and RC created
+
+Notification Channels
+
+in-application alerts
+dashboard highlighting
+email notifications (optional/configurable)
+
+
+12. Business Rules
+Rule-01
+Every tracked item shall have a visible procurement coverage status.
+Rule-02
+If a valid RC exists for the current date range, the item shall be classified as Active RC Available.
+Rule-03
+If no valid RC exists and no tender exists, the item shall be classified as RC Not Available.
+Rule-04
+If no active RC exists but a tender is in progress, the item shall be classified as Tender in Progress.
+Rule-05
+The minimum default alert period for expiring RCs shall be 180 days.
+Rule-06
+Expired RCs shall be treated as critical and prominently highlighted.
+Rule-07
+Tender ageing shall be automatically calculated based on initiation date and stage transition dates.
+Rule-08
+All RC updates, tender updates, and stage changes shall be audit logged.
+Rule-09
+If multiple RCs are linked to the same item, the system shall determine the effective active RC based on validity dates and status.

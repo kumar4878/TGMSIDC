@@ -26,10 +26,10 @@ export default function Login() {
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-white/10 backdrop-blur border border-white/20 mb-2">
-            <span className="text-white font-bold text-xl">TG</span>
+            <span className="text-white font-bold text-xl">HP</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">TGMSIDC Procurement Portal</h1>
-          <p className="text-white/60 text-sm">Telangana State Medical Services & Infrastructure Development Corporation</p>
+          <h1 className="text-2xl font-bold text-white">Health Procurement Portal</h1>
+          <p className="text-white/60 text-sm">Medical Services & Infrastructure Development Corporation</p>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400/20 border border-amber-400/30 rounded-full">
             <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
             <span className="text-amber-300 text-xs font-medium">Demo Login — Click a role to enter</span>
@@ -78,7 +78,7 @@ export default function Login() {
         </Card>
 
         <p className="text-center text-white/30 text-xs">
-          Government of Telangana · Medical Devices Procurement System
+          Medical Devices Procurement System
         </p>
       </div>
     </div>

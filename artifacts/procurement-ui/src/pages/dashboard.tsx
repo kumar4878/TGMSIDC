@@ -83,7 +83,7 @@ export default function Dashboard() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Procurement Dashboard</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Telangana State Medical Services and Infrastructure Development Corporation</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Medical Services and Infrastructure Development Corporation</p>
         </div>
         <div className="text-right shrink-0">
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Financial Year</p>

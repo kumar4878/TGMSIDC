@@ -1206,6 +1206,9 @@ components:
           type: string
         notes:
           type: string
+        equipmentName:
+          type: string
+          description: Optional override for equipment name when creating a tender without an indent (e.g. from Coverage Dashboard)
       required:
         - indentId
         - tenderInvitedDate

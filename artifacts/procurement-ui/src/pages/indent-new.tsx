@@ -14,7 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   ArrowLeft, Upload, FileText, X, Plus, CheckCircle2,
   ChevronDown, ChevronUp, IndianRupee, AlertCircle, Package, ChevronsUpDown, Check,
+  PackageCheck,
 } from "lucide-react";
+import { mockStockPositions } from "@/mocks/data";
 import {
   PRODUCT_CATEGORIES, getProductCategory, getProductSpecs, getCategoryMeta,
 } from "@/lib/productSpecs";
@@ -506,6 +508,61 @@ export default function IndentNew() {
                       <span className="font-bold text-foreground">{formatINR(itemTotal)}</span>
                     </div>
                   )}
+
+                  {/* Stock Snapshot Panel */}
+                  {li.equipmentId && form.facilityId && (() => {
+                    const sp = mockStockPositions.find(
+                      p => p.facilityId === parseInt(form.facilityId) && p.itemId === parseInt(li.equipmentId)
+                    );
+                    if (!sp) return null;
+                    const riskConfig: Record<string, { cls: string; label: string }> = {
+                      normal:                 { cls: "border-green-200 bg-green-50",  label: "Normal" },
+                      warning:                { cls: "border-amber-200 bg-amber-50",  label: "Warning" },
+                      high_risk:              { cls: "border-red-200 bg-red-50",      label: "High Risk" },
+                      justification_required: { cls: "border-orange-200 bg-orange-50", label: "Overstock — Justification Required" },
+                    };
+                    const rc = riskConfig[sp.riskLevel] ?? riskConfig.normal;
+                    const coverColor = sp.stockCoverDays === 0 ? "text-red-600 font-bold"
+                      : sp.stockCoverDays < 30 ? "text-red-500 font-semibold"
+                      : sp.stockCoverDays > 90 ? "text-amber-600 font-semibold"
+                      : "text-emerald-700";
+                    return (
+                      <div className={`rounded-lg border p-3 ${rc.cls}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                            <PackageCheck className="h-3.5 w-3.5" />
+                            Stock Snapshot — {sp.facilityName}
+                          </div>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            sp.riskLevel === "high_risk" ? "bg-red-100 text-red-700 border-red-200"
+                            : sp.riskLevel === "justification_required" ? "bg-orange-100 text-orange-700 border-orange-200"
+                            : sp.riskLevel === "warning" ? "bg-amber-100 text-amber-700 border-amber-200"
+                            : "bg-green-100 text-green-700 border-green-200"
+                          }`}>{rc.label}</span>
+                        </div>
+                        <div className="grid grid-cols-5 gap-3 text-xs">
+                          {[
+                            { label: "Usable Stock", value: `${sp.usableStock} ${sp.unit}` },
+                            { label: "Near-Expiry", value: `${sp.nearExpiryStock} ${sp.unit}`, warn: sp.nearExpiryStock > 0 },
+                            { label: "Avg Consumption / Month", value: `${sp.avgMonthlyConsumption} ${sp.unit}` },
+                            { label: "Stock Cover", value: sp.stockCoverDays === 999 ? "∞ (capital item)" : `${sp.stockCoverDays} days`, coverColor: true },
+                            { label: "Suggested Indent Qty", value: sp.suggestedIndentQty > 0 ? `${sp.suggestedIndentQty} ${sp.unit}` : "Not required" },
+                          ].map(item => (
+                            <div key={item.label}>
+                              <p className="text-muted-foreground leading-tight">{item.label}</p>
+                              <p className={`font-semibold mt-0.5 ${item.coverColor ? coverColor : item.warn ? "text-amber-700" : ""}`}>{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                        {sp.riskLevel === "justification_required" && (
+                          <p className="text-xs text-orange-700 mt-2 font-medium">⚠ Existing stock exceeds 90-day cover. GM approval will require written justification for this indent.</p>
+                        )}
+                        {sp.riskLevel === "high_risk" && (
+                          <p className="text-xs text-red-700 mt-2 font-medium">🔴 Stock critically low or zero. Mark urgency as Critical or Essential.</p>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Justification */}
                   <div>

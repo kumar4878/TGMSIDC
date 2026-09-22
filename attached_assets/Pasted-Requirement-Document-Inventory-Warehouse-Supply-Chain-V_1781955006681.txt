@@ -1,0 +1,623 @@
+Requirement Document
+Inventory, Warehouse, Supply Chain Visibility, Analytics & KPI Monitoring
+________________________________________
+1. Document Information
+Document Name: Requirement Document – Inventory, Warehouse, Supply Chain Visibility, Analytics & KPI Monitoring
+Version: 1.0
+Date: 20-Jun-2026
+Prepared For: Procurement, Inventory, Warehouse, Supply Chain, and Operations Stakeholders
+________________________________________
+2. Purpose
+The purpose of this document is to capture the business requirements for strengthening inventory visibility, warehouse control, supply chain monitoring, demand forecasting, analytics, and KPI-based decision support in a generic healthcare / inventory management environment.
+This requirement document specifically addresses the following challenges:
+1.	Stock lying unused at facilities due to procurement indents being raised without checking available stock
+2.	Absence of a structured stock redistribution mechanism across facilities
+3.	Extended quarantine and quality check process at warehouses with weak tracking and prioritization
+4.	Lack of end-to-end stock visibility across warehouses, stores, and dispensing points
+5.	Weak near-expiry monitoring and weak FEFO/FIFO adherence
+6.	Weak or absent demand forecasting
+7.	Weak district-level / regional distribution vs consumption analytics
+8.	Weak tracking of standardized performance metrics and KPIs
+________________________________________
+3. Business Context
+Organizations managing essential medicines and healthcare products frequently face operational inefficiencies due to fragmented inventory visibility, weak warehouse controls, manual tracking, and insufficient analytics.
+Typical business problems include:
+•	Facilities raising procurement indents without checking existing stock balances, resulting in excess or irrational procurement
+•	Surplus stock lying unused in some facilities while other facilities face stock shortages
+•	Quarantined stock remaining blocked for extended periods because sample collection, testing, and release are not actively monitored
+•	Inadequate visibility of stock movement from warehouse to store to dispensing location
+•	Poor monitoring of near-expiry batches, leading to wastage and weak FEFO/FIFO adherence
+•	Limited use of consumption history and seasonal patterns for demand forecasting
+•	Inability to compare procured, distributed, consumed, expired, and wasted quantities across geographies
+•	No standardized operational KPIs for inventory, warehouse, and supply chain performance
+These challenges result in stock imbalance, delayed availability, avoidable expiry, operational inefficiency, and weak decision-making.
+________________________________________
+4. Objective
+The solution shall provide a centralized mechanism to:
+•	validate procurement indents against available facility stock
+•	identify and enable redistribution of surplus stock between facilities
+•	track warehouse quarantine and quality check status
+•	provide end-to-end stock visibility across the supply chain
+•	monitor near-expiry stock and improve FEFO/FIFO adherence
+•	support demand forecasting using historical consumption and seasonality
+•	provide distribution vs consumption analytics across regions/facilities
+•	define and monitor operational, inventory, and supply chain KPIs
+________________________________________
+5. Scope
+5.1 In Scope
+This requirement document includes:
+•	facility stock visibility during indent creation
+•	indent validation based on available stock and usage
+•	inter-facility stock redistribution
+•	warehouse quarantine and quality check status tracking
+•	release/rejection monitoring of quarantined stock
+•	end-to-end stock movement tracking
+•	near-expiry alerting and FEFO/FIFO monitoring
+•	demand forecasting
+•	district / regional distribution vs consumption analytics
+•	KPI dashboards and performance monitoring
+5.2 Out of Scope
+The following are not part of this requirement document:
+•	vendor payment processing
+•	financial accounting
+•	transportation route optimization
+•	laboratory system replacement
+•	human resource management
+•	external portal modification
+•	advanced artificial intelligence forecasting beyond system-supported configurable forecasting methods
+________________________________________
+6. Stakeholders / User Roles
+Role	Responsibility
+Facility Store User / Pharmacist	Maintain stock, create indents, view stock alerts, receive/issue stock
+Facility Approver / Medical Officer	Review and approve facility indents and transfer requests
+Warehouse Officer	Manage receipts, quarantine stock, releases, and stock dispatch
+Quality Control User	Track sample collection, testing, and quality release/rejection
+Supply Chain Officer	Monitor stock movement, shortages, transfers, and consumption alignment
+Procurement / Planning Officer	Use forecasting and stock analytics for procurement planning
+Management / Reviewer	Review KPI dashboards, stock exceptions, and operational risks
+Administrative User	Configure thresholds, master data, alerts, and access control
+________________________________________
+7. Business Requirements
+________________________________________
+7.1 Requirement Area 1: Stock Visibility at Facilities and Rational Indenting
+Business Need
+Facilities must not raise procurement indents without visibility into available stock, stock in transit, blocked stock, and usage trends.
+Requirement Statements
+BR-01
+The system shall display current stock position at facility level before an indent is raised.
+BR-02
+The system shall show, at minimum, the following item-wise stock information during indent creation:
+•	stock on hand
+•	usable stock
+•	blocked / non-usable stock
+•	stock in transit
+•	pending approved indent quantity
+•	near-expiry stock
+•	average consumption
+•	stock cover
+BR-03
+The system shall validate whether the requested indent quantity is justified based on available stock and consumption trends.
+BR-04
+The system shall identify indents that indicate overstock risk or irrational demand.
+BR-05
+The system shall allow warnings and/or hard-stop controls for indents that exceed configured stock norms.
+BR-06
+The system shall require remarks/justification when requested quantities exceed system recommendations.
+________________________________________
+7.2 Requirement Area 2: Stock Redistribution Between Facilities
+Business Need
+A mechanism is required to identify excess stock at some facilities and shortages at others and allow structured stock transfer.
+Requirement Statements
+BR-07
+The system shall identify facilities with surplus stock based on configurable thresholds.
+BR-08
+The system shall identify facilities with shortage or stock-out risk.
+BR-09
+The system shall provide a recommendation mechanism to match surplus stock with shortage locations.
+BR-10
+The system shall support creation, approval, dispatch, receipt, and closure of inter-facility stock transfers.
+BR-11
+The system shall consider batch, expiry, quantity, and location while recommending redistribution.
+BR-12
+Near-expiry stock shall be prioritized for redistribution to high-consumption locations where feasible.
+________________________________________
+7.3 Requirement Area 3: Quarantine and Quality Check Tracking at Warehouse
+Business Need
+Quarantined medicines must be actively tracked to avoid prolonged delays in sample collection, testing, and release.
+Requirement Statements
+BR-13
+The system shall maintain quarantine status for stock received at warehouse.
+BR-14
+The system shall track stage-wise statuses for quarantined stock, including:
+•	received
+•	under quarantine
+•	sample collection pending
+•	sample collected
+•	sent for testing
+•	result awaited
+•	approved for release
+•	rejected
+•	released
+BR-15
+The system shall capture ageing for quarantined stock.
+BR-16
+The system shall prioritize lots nearing quarantine SLA breach for faster action.
+BR-17
+The system shall prevent quarantined stock from being treated as available stock until release.
+BR-18
+The system shall record release or rejection outcome along with supporting remarks/documents.
+________________________________________
+7.4 Requirement Area 4: End-to-End Stock Visibility
+Business Need
+Users require end-to-end visibility of stock movement from warehouse to stores and onward to dispensing/consumption points.
+Requirement Statements
+BR-19
+The system shall provide stock visibility across all levels of the supply chain hierarchy.
+BR-20
+The system shall track item-wise and batch-wise movement through:
+•	receipt
+•	storage
+•	issue
+•	transfer
+•	receipt at destination
+•	consumption / dispensing
+•	expiry / wastage
+BR-21
+The system shall support drill-down visibility from central warehouse / regional warehouse to facility store and dispensing locations.
+BR-22
+The system shall display stock status by location, including:
+•	available stock
+•	blocked stock
+•	stock in transit
+•	near-expiry stock
+•	expired stock
+BR-23
+The system shall provide visibility of stock coverage and risk indicators such as stock-out risk or overstock.
+________________________________________
+7.5 Requirement Area 5: Near-Expiry Monitoring and FEFO/FIFO Adherence
+Business Need
+Near-expiry stock must be monitored proactively to minimize expiry and wastage and improve issue discipline.
+Requirement Statements
+BR-24
+The system shall identify batches approaching expiry using configurable thresholds.
+BR-25
+The system shall generate alerts for near-expiry stock at warehouse and facility levels.
+BR-26
+The system shall support FEFO/FIFO-based recommendation at issue/dispatch stage.
+BR-27
+The system shall track FEFO/FIFO deviation where users issue non-priority batches.
+BR-28
+The system shall enable action tracking for near-expiry stock, such as:
+•	priority issue
+•	redistribution
+•	block / hold
+•	disposal planning
+BR-29
+The system shall provide visibility into likely expiry risk based on stock quantity, remaining shelf life, and consumption trend.
+________________________________________
+7.6 Requirement Area 6: Demand Forecasting
+Business Need
+Historical data should be used to forecast future demand considering consumption patterns and seasonality.
+Requirement Statements
+BR-30
+The system shall support demand forecasting using historical issue / consumption data.
+BR-31
+The system shall allow forecasting by item, category, geography, and facility type.
+BR-32
+The system shall support configurable forecasting methods such as:
+•	moving average
+•	weighted moving average
+•	seasonal average
+•	trend-based estimate
+BR-33
+The system shall allow consideration of seasonal disease patterns or programmatic demand variations.
+BR-34
+The system shall allow exclusion or adjustment of abnormal periods such as stock-out months or emergency spikes.
+BR-35
+The system shall support manual review and override of forecasted quantities with reason capture.
+________________________________________
+7.7 Requirement Area 7: Distribution vs Consumption Analytics
+Business Need
+Decision-makers require visibility into the relationship between what is procured, distributed, consumed, expired, and wasted.
+Requirement Statements
+BR-36
+The system shall calculate and display, by item and geography:
+•	procured quantity
+•	received quantity
+•	distributed quantity
+•	consumed / dispensed quantity
+•	stock on hand
+•	near-expiry quantity
+•	expired quantity
+•	wasted / damaged quantity
+BR-37
+The system shall support district / regional / facility-level comparison of distribution versus consumption.
+BR-38
+The system shall identify locations with:
+•	repeated overstock
+•	repeated stock-out
+•	low consumption despite high distribution
+•	high expiry / wastage
+BR-39
+The system shall support reporting and trend analysis for distributed vs consumed vs expired/wasted stock.
+________________________________________
+7.8 Requirement Area 8: KPI-Based Monitoring
+Business Need
+Operational, inventory, and supply chain processes require standardized KPIs for monitoring, exception handling, and decision-making.
+Requirement Statements
+BR-40
+The system shall support KPI definition and monitoring across inventory, warehouse, and supply chain processes.
+BR-41
+The system shall display KPI dashboards for management and operational users.
+BR-42
+The system shall allow threshold-based categorization of KPIs (e.g., red/amber/green).
+BR-43
+The system shall support KPI alerts when thresholds are breached.
+BR-44
+The system shall support historical KPI trends over time.
+BR-45
+The system shall include meaningful KPIs such as:
+•	stock-out rate
+•	overstock rate
+•	near-expiry stock %
+•	expiry / wastage %
+•	average quarantine time
+•	on-time release %
+•	redistribution turnaround time
+•	forecast accuracy
+•	issue-to-consumption lag
+•	FEFO compliance %
+________________________________________
+8. Functional Requirements
+________________________________________
+8.1 Facility Stock Visibility and Indent Validation
+FR-01
+The system shall display a facility stock snapshot during indent creation.
+FR-02
+The stock snapshot shall include:
+•	item code
+•	item name
+•	current stock
+•	usable stock
+•	blocked stock
+•	stock in transit
+•	pending indent quantity
+•	average consumption
+•	stock cover days / months
+•	near-expiry stock
+•	suggested indent quantity
+FR-03
+The system shall calculate recommended indent quantity using configurable business logic.
+FR-04
+The system shall validate user-entered indent quantity against stock and consumption parameters.
+FR-05
+The system shall categorize indents as:
+•	normal
+•	warning
+•	high-risk
+•	justification required
+________________________________________
+8.2 Redistribution Management
+FR-06
+The system shall identify surplus and shortage locations based on rules/thresholds.
+FR-07
+The system shall recommend possible source and destination pairs for redistribution.
+FR-08
+The system shall allow creation of transfer requests with:
+•	source location
+•	destination location
+•	item
+•	batch
+•	expiry date
+•	quantity
+•	remarks
+•	priority
+FR-09
+The system shall support approval workflow for transfer requests.
+FR-10
+The system shall support dispatch confirmation and receipt confirmation.
+FR-11
+The system shall update stock balances at both source and destination locations after transfer closure.
+________________________________________
+8.3 Warehouse Quarantine and QC Tracking
+FR-12
+The system shall record stock receipt into quarantine.
+FR-13
+The system shall maintain quarantine status and status history for each lot/batch.
+FR-14
+The system shall capture sample collection date, testing reference, lab result date, and release/rejection decision.
+FR-15
+The system shall calculate quarantine ageing and pending duration at each status.
+FR-16
+The system shall generate prioritized worklists for batches nearing quarantine SLA breach.
+FR-17
+The system shall convert released stock into available inventory after approval.
+FR-18
+The system shall block rejected stock from issue and transfer workflows.
+________________________________________
+8.4 End-to-End Stock Visibility
+FR-19
+The system shall provide batch-level stock visibility across all locations in the supply chain.
+FR-20
+The system shall maintain movement history for each batch across locations.
+FR-21
+The system shall display stock position by location and stock status.
+FR-22
+The system shall provide item movement drill-down from receipt to final consumption / expiry / wastage.
+FR-23
+The system shall display stock cover and stock risk indicators by location.
+________________________________________
+8.5 Near-Expiry Monitoring and FEFO/FIFO
+FR-24
+The system shall support configurable near-expiry thresholds.
+FR-25
+The system shall generate near-expiry alerts for batches crossing configured thresholds.
+FR-26
+The system shall recommend FEFO/FIFO-compliant issue batches.
+FR-27
+The system shall capture FEFO/FIFO deviation details where applicable.
+FR-28
+The system shall provide recommended action for near-expiry stock.
+FR-29
+The system shall display near-expiry inventory in dashboard/worklist form.
+________________________________________
+8.6 Demand Forecasting
+FR-30
+The system shall aggregate historical issue/consumption data for forecasting.
+FR-31
+The system shall support forecasting runs at defined intervals.
+FR-32
+The system shall generate forecast quantity outputs by item/location/category.
+FR-33
+The system shall allow seasonal adjustment and abnormal period exclusion.
+FR-34
+The system shall allow review and manual override of forecasts.
+FR-35
+The system shall maintain forecast history and variance tracking.
+________________________________________
+8.7 Distribution vs Consumption Analytics
+FR-36
+The system shall calculate issued, distributed, consumed, expired, and wasted quantities by item and geography.
+FR-37
+The system shall provide comparison dashboards at region / district / facility level.
+FR-38
+The system shall support period-wise analysis such as monthly, quarterly, or seasonal.
+FR-39
+The system shall allow drill-down from regional summary to facility and item detail.
+________________________________________
+8.8 KPI Monitoring
+FR-40
+The system shall maintain KPI definitions and thresholds.
+FR-41
+The system shall display KPI dashboards with trend indicators.
+FR-42
+The system shall support alerting for breached KPIs.
+FR-43
+The system shall provide KPI drill-down to source data.
+FR-44
+The system shall support historical KPI trend and comparative analysis.
+________________________________________
+9. User Interface Requirements
+________________________________________
+9.1 Facility Indent Validation Screen
+The system shall provide a screen for indent creation with stock visibility and recommendation support.
+Key Fields / Sections
+•	facility details
+•	item details
+•	current stock snapshot
+•	average consumption
+•	stock cover
+•	suggested quantity
+•	requested quantity
+•	justification remarks
+•	alert / validation message
+________________________________________
+9.2 Surplus and Shortage Dashboard
+The system shall provide a dashboard to identify:
+•	surplus locations
+•	shortage locations
+•	near-expiry transfer opportunities
+•	transfer recommendations
+________________________________________
+9.3 Stock Transfer Request Screen
+The system shall provide a screen to create and manage inter-location stock transfers.
+Key Fields
+•	source location
+•	destination location
+•	item
+•	batch
+•	expiry date
+•	quantity
+•	status
+•	approval remarks
+•	dispatch details
+•	receipt details
+________________________________________
+9.4 Quarantine Dashboard
+The system shall display:
+•	total stock under quarantine
+•	lots pending sample collection
+•	lots pending test results
+•	lots beyond SLA
+•	lots released
+•	lots rejected
+________________________________________
+9.5 Quarantine Detail Screen
+The system shall provide:
+•	receipt details
+•	batch details
+•	quarantine status
+•	ageing
+•	sample collection details
+•	lab/test details
+•	release/rejection action
+•	supporting documents
+________________________________________
+9.6 End-to-End Stock Visibility Dashboard
+The system shall provide visibility of stock by location hierarchy and batch movement trail.
+________________________________________
+9.7 Near-Expiry Dashboard
+The system shall display:
+•	near-expiry stock by location
+•	item / batch / expiry date
+•	quantity
+•	days remaining
+•	recommended action
+•	likely expiry risk
+________________________________________
+9.8 Forecasting Dashboard
+The system shall provide:
+•	historical trend view
+•	forecast output
+•	forecasting method
+•	adjustment option
+•	variance view
+________________________________________
+9.9 Distribution vs Consumption Dashboard
+The system shall show:
+•	procured
+•	distributed
+•	consumed
+•	near-expiry
+•	expired
+•	wasted
+•	comparison across geographies
+________________________________________
+9.10 KPI Dashboard
+The system shall show KPI scorecards, thresholds, alerts, and historical trends.
+________________________________________
+10. Reports
+The system shall provide the following reports:
+RPT-01: Facility Stock Position Report
+Shows item-wise stock at facility level.
+RPT-02: Irrational / High-Risk Indent Report
+Shows indents raised despite sufficient stock or poor utilization context.
+RPT-03: Surplus and Shortage Report
+Shows facilities with excess stock and facilities with shortage.
+RPT-04: Stock Redistribution Report
+Shows transfer requests, status, source/destination, and closure.
+RPT-05: Quarantine Ageing Report
+Shows lots under quarantine with ageing and SLA status.
+RPT-06: QC Release / Rejection Report
+Shows released, rejected, and pending lots.
+RPT-07: End-to-End Stock Movement Report
+Shows item movement from warehouse to final location.
+RPT-08: Near-Expiry Stock Report
+Shows batches nearing expiry across locations.
+RPT-09: FEFO/FIFO Deviation Report
+Shows transactions that did not follow FEFO/FIFO recommendations.
+RPT-10: Demand Forecast Report
+Shows forecasted demand versus historical trends.
+RPT-11: Forecast Variance Report
+Shows forecast versus actual demand/consumption.
+RPT-12: Distribution vs Consumption Report
+Shows issued, consumed, expired, and wasted quantities by region/facility.
+RPT-13: KPI Scorecard Report
+Shows KPI values, thresholds, and trend status.
+________________________________________
+11. Notifications and Alerts
+The system shall support the following notifications:
+•	high-risk / irrational indent detected
+•	facility overstock
+•	facility shortage / stock-out risk
+•	transfer recommendation available
+•	transfer pending approval / dispatch / receipt
+•	batch under quarantine nearing SLA breach
+•	near-expiry stock crossing configured threshold
+•	FEFO/FIFO deviation
+•	forecast variance beyond threshold
+•	KPI breach alert
+Notification Channels
+•	in-application alerts
+•	dashboard highlighting
+•	email notifications (optional/configurable)
+________________________________________
+12. Business Rules
+Rule-01
+Indent validation shall consider current stock, stock in transit, pending approved quantities, and historical usage.
+Rule-02
+Excess stock at one facility and shortage at another shall be considered for redistribution before fresh replenishment where applicable.
+Rule-03
+Only usable, non-expired, non-quarantine stock shall be eligible for transfer.
+Rule-04
+Near-expiry stock transfer shall be allowed only if minimum residual shelf life rules are met.
+Rule-05
+Quarantined stock shall not be considered available for issue or transfer.
+Rule-06
+FEFO shall be the preferred inventory issue principle; FIFO may apply where expiry data is not relevant or not available.
+Rule-07
+Forecast calculations shall support adjustment for stock-out periods and abnormal spikes.
+Rule-08
+KPI thresholds shall be configurable by administrators.
+Rule-09
+All stock movements, transfer actions, quarantine stage changes, and forecast overrides shall be audit logged.
+________________________________________
+13. Data Requirements
+The following data elements are required:
+Item / Batch Data
+•	item code
+•	item name
+•	category
+•	specification / strength / dosage (where applicable)
+•	batch / lot number
+•	expiry date
+•	unit of measure
+Inventory Data
+•	location
+•	stock quantity
+•	usable quantity
+•	blocked quantity
+•	stock in transit
+•	near-expiry quantity
+•	expired quantity
+Transfer Data
+•	transfer ID
+•	source location
+•	destination location
+•	item
+•	batch
+•	expiry
+•	quantity
+•	status
+•	approval details
+Quarantine / QC Data
+•	receipt ID
+•	item / batch
+•	warehouse
+•	quarantine status
+•	sample collection date
+•	test reference
+•	result date
+•	release/rejection decision
+Forecast Data
+•	historical issue/consumption
+•	forecast period
+•	forecast quantity
+•	forecast method
+•	manual adjustment
+•	reason
+KPI Data
+•	KPI name
+•	current value
+•	threshold
+•	period
+•	location / business segment
+________________________________________
+14. Audit Requirements
+The system shall maintain audit logs for:
+•	indent creation and modification
+•	stock transfer creation and status change
+•	quarantine status changes
+•	QC release/rejection
+•	stock issue/receipt/transfer
+•	FEFO/FIFO deviation
+•	forecast creation and override
+•	KPI configuration updates
+Each audit record shall capture:
+•	user ID
+•	date/time
+•	action performed
+•	previous value
+•	updated value
+•	remarks (if any)
+

@@ -11,14 +11,20 @@ import {
 const router: IRouter = Router();
 
 async function enrichTender(t: typeof tendersTable.$inferSelect) {
-  const [indent] = await db.select().from(indentsTable).where(eq(indentsTable.id, t.indentId));
-  const equipmentName = indent
-    ? (await db.select().from(equipmentTable).where(eq(equipmentTable.id, indent.equipmentId)))[0]?.name ?? "Unknown"
-    : "Unknown";
+  let equipmentName = t.equipmentName ?? null;
+
+  if (!equipmentName && t.indentId) {
+    const [indent] = await db.select().from(indentsTable).where(eq(indentsTable.id, t.indentId));
+    if (indent) {
+      equipmentName =
+        (await db.select().from(equipmentTable).where(eq(equipmentTable.id, indent.equipmentId)))[0]?.name ?? "Unknown";
+    }
+  }
 
   return {
     ...t,
-    equipmentName,
+    indentId: t.indentId ?? 0,
+    equipmentName: equipmentName ?? "Unknown",
     tenderInvitedDate: t.tenderInvitedDate ? t.tenderInvitedDate.toISOString() : null,
     bidsReceivedDate: t.bidsReceivedDate ? t.bidsReceivedDate.toISOString() : null,
     l1BidderName: t.l1BidderName ?? null,
@@ -45,15 +51,22 @@ router.post("/tenders", async (req, res): Promise<void> => {
   const count = await db.select().from(tendersTable);
   const tenderNumber = `TND-${new Date().getFullYear()}-${String(count.length + 1).padStart(4, "0")}`;
 
+  const hasBoundIndent = parsed.data.indentId > 0;
+
   const [tender] = await db.insert(tendersTable).values({
     tenderNumber,
-    indentId: parsed.data.indentId,
+    indentId: hasBoundIndent ? parsed.data.indentId : null,
+    equipmentName: parsed.data.equipmentName ?? null,
     status: "invited",
     tenderInvitedDate: new Date(parsed.data.tenderInvitedDate),
     notes: parsed.data.notes,
   }).returning();
 
-  await db.update(indentsTable).set({ status: "tender_initiated", tenderId: tender.id }).where(eq(indentsTable.id, parsed.data.indentId));
+  if (hasBoundIndent) {
+    await db.update(indentsTable)
+      .set({ status: "tender_initiated", tenderId: tender.id })
+      .where(eq(indentsTable.id, parsed.data.indentId));
+  }
 
   res.status(201).json(await enrichTender(tender));
 });

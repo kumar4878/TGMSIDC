@@ -32,9 +32,10 @@ export default function RateContracts() {
 
   function getExpiryWarning(endDate: string) {
     const days = differenceInDays(new Date(endDate), new Date());
-    if (days < 0) return { text: "Expired", color: "text-red-600" };
-    if (days <= 30) return { text: `Expires in ${days}d`, color: "text-red-600" };
-    if (days <= 60) return { text: `Expires in ${days}d`, color: "text-amber-600" };
+    if (days < 0)   return { text: "Expired",              color: "text-red-600" };
+    if (days <= 30) return { text: `Expires in ${days}d`,  color: "text-red-600" };
+    if (days <= 90) return { text: `Expires in ${days}d`,  color: "text-orange-600" };
+    if (days <= 180) return { text: `Expires in ${days}d`, color: "text-amber-600" };
     return null;
   }
 
@@ -53,7 +54,7 @@ export default function RateContracts() {
       {expiring && expiring.length > 0 && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
           <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
-          <p className="text-sm text-amber-800 font-medium">{expiring.length} contract{expiring.length > 1 ? "s" : ""} expiring within 60 days — action required</p>
+          <p className="text-sm text-amber-800 font-medium">{expiring.length} contract{expiring.length > 1 ? "s" : ""} expiring within 180 days — action required (BR-09)</p>
         </div>
       )}
 

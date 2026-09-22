@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
-  Plus, Search, CheckCircle2, ChevronRight, IndianRupee,
+  Plus, Search, CheckCircle2, ChevronRight, IndianRupee, Clock, XCircle, ShieldAlert, Gavel,
 } from "lucide-react";
 import type { Equipment } from "@workspace/api-client-react";
 import { ProductSpecSheet } from "@/components/ProductSpecSheet";
@@ -21,6 +21,37 @@ import {
   PRODUCT_CATEGORIES, getProductCategory, getProductSpecs, getCategoryMeta,
 } from "@/lib/productSpecs";
 import { cn } from "@/lib/utils";
+import { differenceInDays } from "date-fns";
+import { mockRateContracts, mockTenders } from "@/mocks/data";
+
+type RCStatus = "active_rc" | "expiring_soon" | "expired" | "tender_in_progress" | "no_coverage";
+
+function getRCStatus(equipmentId: number, equipmentName: string): { status: RCStatus; daysLeft?: number } {
+  const today = new Date();
+  const itemRCs = mockRateContracts.filter((rc) => rc.equipmentId === equipmentId);
+  const activeRC = itemRCs.find((rc) => rc.status === "active" && new Date(rc.endDate) > today);
+  const expiredRC = itemRCs.some((rc) => new Date(rc.endDate) <= today);
+  const activeTender = mockTenders.find((t) => {
+    const first = equipmentName.toLowerCase().split(" ")[0];
+    return t.equipmentName.toLowerCase().includes(first) && t.status !== "rc_created" && t.status !== "awarded";
+  });
+
+  if (activeRC) {
+    const daysLeft = differenceInDays(new Date(activeRC.endDate), today);
+    return { status: daysLeft <= 180 ? "expiring_soon" : "active_rc", daysLeft };
+  }
+  if (activeTender) return { status: "tender_in_progress" };
+  if (expiredRC)    return { status: "expired" };
+  return { status: "no_coverage" };
+}
+
+const RC_STATUS_META: Record<RCStatus, { label: string; icon: React.ElementType; cls: string }> = {
+  active_rc:          { label: "Active RC",         icon: CheckCircle2, cls: "text-emerald-600 bg-emerald-50" },
+  expiring_soon:      { label: "Expiring",           icon: Clock,        cls: "text-amber-600 bg-amber-50" },
+  expired:            { label: "Expired",            icon: XCircle,      cls: "text-red-600 bg-red-50" },
+  tender_in_progress: { label: "Tender",             icon: Gavel,        cls: "text-blue-600 bg-blue-50" },
+  no_coverage:        { label: "No RC",              icon: ShieldAlert,  cls: "text-slate-500 bg-slate-50" },
+};
 
 const SUBCATEGORY_LABELS: Record<string, string> = {
   imaging: "Imaging",
@@ -153,6 +184,7 @@ export default function Equipment() {
                     <th className="px-4 py-3 text-left font-medium text-muted-foreground">Sub-type</th>
                     <th className="px-4 py-3 text-left font-medium text-muted-foreground">Est. Unit Rate</th>
                     <th className="px-4 py-3 text-left font-medium text-muted-foreground">GST</th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">RC Coverage</th>
                     <th className="px-4 py-3 text-left font-medium text-muted-foreground">Std.</th>
                     <th className="px-4 py-3 text-left font-medium text-muted-foreground" />
                   </tr>
@@ -160,7 +192,7 @@ export default function Equipment() {
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-16 text-center text-muted-foreground">
+                      <td colSpan={9} className="px-4 py-16 text-center text-muted-foreground">
                         No products found in this category.
                       </td>
                     </tr>
@@ -208,6 +240,22 @@ export default function Equipment() {
                             )}
                           </td>
                           <td className="px-4 py-3 font-semibold">{e.gstRate}%</td>
+                          <td className="px-4 py-3" onClick={(ev) => ev.stopPropagation()}>
+                            {(() => {
+                              const { status, daysLeft } = getRCStatus(e.id, e.name);
+                              const m = RC_STATUS_META[status];
+                              const Icon = m.icon;
+                              return (
+                                <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium", m.cls)}>
+                                  <Icon className="h-3 w-3 shrink-0" />
+                                  {m.label}
+                                  {daysLeft != null && status === "expiring_soon" && (
+                                    <span className="opacity-70 ml-0.5">{daysLeft}d</span>
+                                  )}
+                                </span>
+                              );
+                            })()}
+                          </td>
                           <td className="px-4 py-3">
                             {e.standardised && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
                           </td>
