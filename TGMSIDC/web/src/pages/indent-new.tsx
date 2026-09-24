@@ -144,9 +144,12 @@ export default function IndentNew() {
       })
       .join("\n");
 
+    const estimatedValue = completeItems.reduce((s, li) => s + (getUnitRate(li.equipmentId) * (parseInt(li.qty) || 0)), 0);
+
     const body: CreateIndentBody = {
       facilityId: form.facilityId,
       equipmentId: firstItem.equipmentId,
+      estimatedValue,
       quantity: completeItems.reduce((s, li) => s + (parseInt(li.qty) || 0), 0),
       technicalRequirements,
       digitisedBy: form.digitisedBy,

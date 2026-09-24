@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
-import { getSteps, getProgress, getPendingIndentIdsForRole } from "@/lib/approvalWorkflow";
-import type { ApprovalStep } from "@/lib/approvalWorkflow";
+import { getSteps, ApprovalStep } from "@/lib/approvalWorkflow";
 import type { Indent } from "@/lib/api-hooks";
+import { BASE_URL } from "@/lib/api";
 import {
   Clock, FileText, CheckCircle2, XCircle, AlertTriangle,
   Eye, Inbox, RotateCcw, GitBranch, Building2, Wrench,
@@ -77,15 +77,18 @@ export default function ApprovalInbox() {
 
   const { data: allIndents = [] } = useListIndents({});
 
-  const pendingIds = getPendingIndentIdsForRole(user.role);
-
-  const pendingItems: InboxItem[] = pendingIds.flatMap((indentId) => {
-    const indent = allIndents.find((i) => i.id === indentId);
-    if (!indent) return [];
-    const step = getSteps(indentId).find(
-      (s) => s.requiredRole === user.role && (s.status === "pending" || s.status === "returned")
+  const pendingItems: InboxItem[] = allIndents.flatMap((indent) => {
+    const steps = (indent.approvalSteps && indent.approvalSteps.length > 0) ? indent.approvalSteps : getSteps(indent.id);
+    const step = steps.find(
+      (s: ApprovalStep) => s.requiredRole === user.role && (s.status === "pending" || s.status === "returned")
     );
     if (!step) return [];
+    
+    // Ensure we are the *currently active* step by checking if all prior steps are completed
+    const priorSteps = steps.filter((s: ApprovalStep) => s.stepNumber < step.stepNumber);
+    const canAct = priorSteps.every((s: ApprovalStep) => s.status === "approved" || s.status === "skipped");
+    if (!canAct) return [];
+
     const submittedAt = new Date(indent.createdAt);
     const slaDeadline = new Date(submittedAt.getTime() + SLA_HOURS[user.role] * 60 * 60 * 1000);
     return [{ indent, step, slaDeadline, isBreach: new Date() > slaDeadline }];
@@ -93,11 +96,16 @@ export default function ApprovalInbox() {
 
   // Completed items for the current role
   const completedItems = allIndents.flatMap((indent) => {
-    const step = getSteps(indent.id).find(
-      (s) => s.requiredRole === user.role && (s.status === "approved" || s.status === "rejected" || s.status === "returned")
+    const steps = (indent.approvalSteps && indent.approvalSteps.length > 0) ? indent.approvalSteps : getSteps(indent.id);
+    const step = steps.find(
+      (s: ApprovalStep) => s.requiredRole === user.role && (s.status === "approved" || s.status === "rejected" || s.status === "returned")
     );
     if (!step || step.status === "returned") return [];
-    if (pendingIds.includes(indent.id)) return [];
+    
+    // Check if this indent is ALSO in pending items for this role (e.g. it was returned and is back to them)
+    const isCurrentlyPending = pendingItems.some(pi => pi.indent.id === indent.id);
+    if (isCurrentlyPending) return [];
+
     const submittedAt = new Date(indent.createdAt);
     const slaDeadline = new Date(submittedAt.getTime() + SLA_HOURS[user.role] * 60 * 60 * 1000);
     return [{ indent, step, slaDeadline, isBreach: false }];
@@ -118,7 +126,7 @@ export default function ApprovalInbox() {
       procurementMode?: string;
     }) => {
       setProcessing(true);
-      const res = await fetch(`/api/indents/${payload.indentId}/approval-steps/${payload.stepNumber}`, {
+      const res = await fetch(`${BASE_URL}/indents/${payload.indentId}/approval-steps/${payload.stepNumber}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -146,10 +154,11 @@ export default function ApprovalInbox() {
   function submitAction() {
     if (!actionDialog) return;
     const { item, action } = actionDialog;
-    const progress = getProgress(item.indent.id);
-    const isLastStep = item.step.stepNumber === progress.totalSteps;
+    const steps = (item.indent.approvalSteps && item.indent.approvalSteps.length > 0) ? item.indent.approvalSteps : getSteps(item.indent.id);
+    const totalSteps = steps.length;
+    const isLastStep = item.step.stepNumber === totalSteps;
     const needsMode = action === "approve" && (
-      (item.step.requiredRole === "gm" && progress.totalSteps === 3) ||
+      (item.step.requiredRole === "gm" && totalSteps === 3) ||
       (item.step.requiredRole === "director" && isLastStep)
     );
 
@@ -271,10 +280,11 @@ export default function ApprovalInbox() {
         <DialogContent className="max-w-lg">
           {actionDialog && (() => {
             const { item, action } = actionDialog;
-            const progress = getProgress(item.indent.id);
-            const isLastStep = item.step.stepNumber === progress.totalSteps;
+            const steps = (item.indent.approvalSteps && item.indent.approvalSteps.length > 0) ? item.indent.approvalSteps : getSteps(item.indent.id);
+            const totalSteps = steps.length;
+            const isLastStep = item.step.stepNumber === totalSteps;
             const needsMode = action === "approve" && (
-              (item.step.requiredRole === "gm" && progress.totalSteps === 3) ||
+              (item.step.requiredRole === "gm" && totalSteps === 3) ||
               (item.step.requiredRole === "director" && isLastStep)
             );
             const isReject = action === "reject";
@@ -286,8 +296,8 @@ export default function ApprovalInbox() {
                 <DialogHeader>
                   <DialogTitle className={cn(
                     isApprove ? "text-emerald-700" :
-                    isReturn ? "text-amber-700" :
-                    "text-red-700"
+                      isReturn ? "text-amber-700" :
+                        "text-red-700"
                   )}>
                     {isApprove ? "Approve Indent" : isReturn ? "Return for Revision" : "Reject Indent"}
                     {" — "}{item.indent.indentNumber}
@@ -298,8 +308,8 @@ export default function ApprovalInbox() {
                   <div className={cn(
                     "rounded-lg border p-3 text-sm",
                     isApprove ? "bg-emerald-50 border-emerald-200" :
-                    isReturn ? "bg-amber-50 border-amber-200" :
-                    "bg-red-50 border-red-200"
+                      isReturn ? "bg-amber-50 border-amber-200" :
+                        "bg-red-50 border-red-200"
                   )}>
                     <p className="font-semibold">{item.indent.equipmentName} × {item.indent.quantity}</p>
                     <p className="text-xs mt-0.5 opacity-80">{item.indent.facilityName}</p>
@@ -332,7 +342,7 @@ export default function ApprovalInbox() {
                       placeholder={
                         isApprove ? "Observations, conditions, approval notes..."
                           : isReturn ? "Specify what needs to be corrected or clarified..."
-                          : "Provide a specific reason for rejection..."
+                            : "Provide a specific reason for rejection..."
                       }
                       value={comments}
                       onChange={(e) => setComments(e.target.value)}
@@ -349,18 +359,18 @@ export default function ApprovalInbox() {
                   <Button
                     className={cn(
                       isApprove ? "bg-emerald-600 hover:bg-emerald-700" :
-                      isReturn ? "bg-amber-500 hover:bg-amber-600 text-white" :
-                      "bg-red-600 hover:bg-red-700"
+                        isReturn ? "bg-amber-500 hover:bg-amber-600 text-white" :
+                          "bg-red-600 hover:bg-red-700"
                     )}
                     disabled={processing || ((isReject || isReturn) && !comments.trim())}
                     onClick={submitAction}
                   >
                     {isApprove ? <CheckCircle2 className="h-4 w-4 mr-1.5" /> :
-                     isReturn ? <RotateCcw className="h-4 w-4 mr-1.5" /> :
-                     <XCircle className="h-4 w-4 mr-1.5" />}
+                      isReturn ? <RotateCcw className="h-4 w-4 mr-1.5" /> :
+                        <XCircle className="h-4 w-4 mr-1.5" />}
                     {processing ? "Processing..." :
                       isApprove ? (item.step.requiredRole === "director" ? "Accord Sanction" : item.step.requiredRole === "biomedical_engineer" ? "Recommend Approval" : "Approve") :
-                      isReturn ? "Return for Revision" : "Confirm Rejection"}
+                        isReturn ? "Return for Revision" : "Confirm Rejection"}
                   </Button>
                 </DialogFooter>
               </>
@@ -380,7 +390,8 @@ function InboxCard({ item, onApprove, onReturn, onReject, completed }: {
   completed?: boolean;
 }) {
   const { indent, step, isBreach } = item;
-  const progress = getProgress(indent.id);
+  const steps = (indent.approvalSteps && indent.approvalSteps.length > 0) ? indent.approvalSteps : getSteps(indent.id);
+  const totalSteps = steps.length;
   const slaHours = SLA_HOURS[step.requiredRole] ?? 72;
   const submittedAt = new Date(indent.createdAt);
   const slaDeadline = new Date(submittedAt.getTime() + slaHours * 60 * 60 * 1000);
@@ -398,16 +409,16 @@ function InboxCard({ item, onApprove, onReturn, onReject, completed }: {
           <div className={cn(
             "p-2.5 rounded-lg shrink-0 mt-0.5",
             step.status === "approved" ? "bg-emerald-100" :
-            step.status === "rejected" ? "bg-red-100" :
-            step.status === "returned" ? "bg-amber-100" :
-            "bg-primary/10"
+              step.status === "rejected" ? "bg-red-100" :
+                step.status === "returned" ? "bg-amber-100" :
+                  "bg-primary/10"
           )}>
             <ShieldCheck className={cn(
               "h-4 w-4",
               step.status === "approved" ? "text-emerald-600" :
-              step.status === "rejected" ? "text-red-600" :
-              step.status === "returned" ? "text-amber-600" :
-              "text-primary"
+                step.status === "rejected" ? "text-red-600" :
+                  step.status === "returned" ? "text-amber-600" :
+                    "text-primary"
             )} />
           </div>
 
@@ -416,7 +427,7 @@ function InboxCard({ item, onApprove, onReturn, onReject, completed }: {
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-mono text-xs font-semibold text-primary">{indent.indentNumber}</span>
               <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-blue-200 text-blue-700">
-                Step {step.stepNumber}/{progress.totalSteps}
+                Step {step.stepNumber}/{totalSteps}
               </Badge>
               {isBreach && !completed && (
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-red-300 bg-red-100 text-red-700">
@@ -475,16 +486,16 @@ function InboxCard({ item, onApprove, onReturn, onReject, completed }: {
 
             {/* Approval steps progress dots */}
             <div className="flex gap-1 mt-2">
-              {getSteps(indent.id).map((s) => (
+              {steps.map((s: ApprovalStep) => (
                 <div
                   key={s.stepNumber}
                   className={cn(
                     "h-1.5 w-6 rounded-full",
                     s.status === "approved" ? "bg-emerald-500" :
-                    s.status === "rejected" ? "bg-red-500" :
-                    s.status === "returned" ? "bg-amber-400" :
-                    s.stepNumber === step.stepNumber ? "bg-primary animate-pulse" :
-                    "bg-muted"
+                      s.status === "rejected" ? "bg-red-500" :
+                        s.status === "returned" ? "bg-amber-400" :
+                          s.stepNumber === step.stepNumber ? "bg-primary animate-pulse" :
+                            "bg-muted"
                   )}
                   title={`Step ${s.stepNumber}: ${s.roleLabel} — ${s.status}`}
                 />

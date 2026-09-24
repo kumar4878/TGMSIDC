@@ -28,6 +28,7 @@ async function formatIndent(r: any) {
     rejectionReason: r.rejectionReason ?? null,
     digitisedBy: r.digitisedBy,
     approvedBy: r.approvedBy ?? null,
+    approvalSteps: r.approvalSteps || [],
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
   };
@@ -61,7 +62,25 @@ router.post("/indents", async (req, res): Promise<void> => {
     technicalRequirements,
     digitisedBy,
     status: "pending_approval",
+    approvalSteps: [],
   });
+
+  // Calculate approval steps
+  const estimatedValue = req.body.estimatedValue ?? 200000;
+  const isHighValue = estimatedValue >= 500000; // APPROVAL_DIRECTOR_THRESHOLD
+
+  const baseSteps = [
+    { stepNumber: 1, requiredRole: "indent_initiator", roleLabel: "Indent Initiator", assignedUserName: digitisedBy, assignedUserId: "u1", status: "approved", actionedAt: new Date(), comments: "Indent submitted." },
+    { stepNumber: 2, requiredRole: "biomedical_engineer", roleLabel: "Biomedical Engineer", assignedUserName: "Er. K. Srinivas", assignedUserId: "u2", status: "pending", actionedAt: null, comments: "" },
+    { stepNumber: 3, requiredRole: "gm", roleLabel: "General Manager", assignedUserName: "P. Narayan", assignedUserId: "u3", status: "pending", actionedAt: null, comments: "" },
+  ];
+  
+  if (isHighValue) {
+    baseSteps.push({ stepNumber: 4, requiredRole: "director", roleLabel: "Additional Director", assignedUserName: "D. Venkatesh", assignedUserId: "u7", status: "pending", actionedAt: null, comments: "" });
+  }
+
+  indent.approvalSteps = baseSteps;
+  await indent.save();
 
   res.status(201).json(await formatIndent(indent));
 });
@@ -129,6 +148,58 @@ router.post("/indents/:id/reject", async (req, res): Promise<void> => {
     return;
   }
   res.json(await formatIndent(indent));
+});
+
+router.get("/indents/:id/approval-steps", async (req, res): Promise<void> => {
+  const indent = await Indent.findById(req.params.id);
+  if (!indent) {
+    res.status(404).json({ error: "Indent not found" });
+    return;
+  }
+  res.json(indent.approvalSteps || []);
+});
+
+router.patch("/indents/:id/approval-steps/:stepNumber", async (req, res): Promise<void> => {
+  const indent = await Indent.findById(req.params.id);
+  if (!indent) {
+    res.status(404).json({ error: "Indent not found" });
+    return;
+  }
+  const stepNumber = parseInt(req.params.stepNumber);
+  const stepIndex = indent.approvalSteps.findIndex(s => s.stepNumber === stepNumber);
+  if (stepIndex === -1) {
+    res.status(404).json({ error: "Step not found" });
+    return;
+  }
+
+  const { status, comments, approvedBy, procurementMode } = req.body;
+  
+  const step = indent.approvalSteps[stepIndex];
+  step.status = status;
+  step.comments = comments;
+  step.actionedAt = new Date();
+  
+  // Propagate indent status changes based on approval
+  if (status === "rejected") {
+    indent.status = "rejected";
+    indent.rejectionReason = comments;
+  } else if (status === "returned") {
+    indent.status = "returned";
+  } else if (status === "approved" && stepNumber === indent.approvalSteps.length) {
+    // If it's the last step and approved, update overall status
+    if (procurementMode) {
+      indent.procurementMode = procurementMode;
+    }
+    // Set to approved, but actually we use a specialized endpoint /approve in old mock
+    // Wait, the new UI calls this endpoint and expects status to update.
+    indent.status = indent.procurementMode === "rate_contract" ? "approved" : "tender_initiated";
+    indent.approvedBy = approvedBy || step.assignedUserName;
+  }
+
+  indent.markModified("approvalSteps");
+  await indent.save();
+  
+  res.json(indent.approvalSteps[stepIndex]);
 });
 
 export default router;

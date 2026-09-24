@@ -15,7 +15,19 @@ export interface IIndent extends Document {
   approvedBy?: string;
   createdAt: Date;
   updatedAt: Date;
+  approvalSteps: any[];
 }
+
+const ApprovalStepSchema = new Schema({
+  stepNumber: { type: Number, required: true },
+  requiredRole: { type: String, required: true },
+  roleLabel: { type: String, required: true },
+  assignedUserName: { type: String, required: true },
+  assignedUserId: { type: String, required: true },
+  status: { type: String, required: true, default: "pending" },
+  actionedAt: { type: Date },
+  comments: { type: String }
+});
 
 const IndentSchema = new Schema<IIndent>(
   {
@@ -31,6 +43,7 @@ const IndentSchema = new Schema<IIndent>(
     rejectionReason: { type: String },
     digitisedBy: { type: String, required: true },
     approvedBy: { type: String },
+    approvalSteps: [ApprovalStepSchema],
   },
   { timestamps: true }
 );

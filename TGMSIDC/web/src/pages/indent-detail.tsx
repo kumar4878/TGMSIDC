@@ -1,5 +1,6 @@
 import { useRoute, Link } from "wouter";
 import { useGetIndent, getGetIndentQueryKey } from "@/lib/api-hooks";
+import { BASE_URL } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
-import { getSteps, getProgress, getActiveStepForRole } from "@/lib/approvalWorkflow";
+import { getSteps, getActiveStepForRole } from "@/lib/approvalWorkflow";
 import type { ApprovalStep } from "@/lib/approvalWorkflow";
 import { ProductSpecSheet } from "@/components/ProductSpecSheet";
 import { getCategoryMeta, getSpecSummary } from "@/lib/productSpecs";
@@ -136,7 +137,7 @@ export default function IndentDetail() {
   const { data: steps = [], refetch: refetchSteps } = useQuery({
     queryKey: stepKey(id),
     queryFn: async () => {
-      const res = await fetch(`/api/indents/${id}/approval-steps`);
+      const res = await fetch(`${BASE_URL}/indents/${id}/approval-steps`);
       return res.json() as Promise<ApprovalStep[]>;
     },
     enabled: !!id,
@@ -149,26 +150,25 @@ export default function IndentDetail() {
   const [processing, setProcessing] = useState(false);
   const [specProduct, setSpecProduct] = useState<{ equipmentId: number; name: string } | null>(null);
 
-  const progress = getProgress(id);
-  const steps_live = steps.length > 0 ? steps : getSteps(id);
+  const steps_live = (steps.length > 0) ? steps : ((indent?.approvalSteps && indent.approvalSteps.length > 0) ? indent.approvalSteps : getSteps(id));
   const progress_live = steps_live.length > 0 ? (() => {
     const total = steps_live.length;
-    const completed = steps_live.filter((s) => s.status === "approved" || s.status === "skipped").length;
-    const firstPending = steps_live.find((s) => s.status === "pending" || s.status === "returned");
+    const completed = steps_live.filter((s: ApprovalStep) => s.status === "approved" || s.status === "skipped").length;
+    const firstPending = steps_live.find((s: ApprovalStep) => s.status === "pending" || s.status === "returned");
     return {
       totalSteps: total,
       completedSteps: completed,
       currentStepNumber: firstPending?.stepNumber ?? total,
       currentStepRole: firstPending?.requiredRole ?? null,
       isComplete: completed === total && total > 0,
-      isRejected: steps_live.some((s) => s.status === "rejected"),
-      isReturned: steps_live.some((s) => s.status === "returned"),
+      isRejected: steps_live.some((s: ApprovalStep) => s.status === "rejected"),
+      isReturned: steps_live.some((s: ApprovalStep) => s.status === "returned"),
     };
-  })() : progress;
+  })() : { totalSteps: 0, completedSteps: 0, currentStepNumber: 0, currentStepRole: null, isComplete: false, isRejected: false, isReturned: false };
 
   const firstPendingStep = steps_live.find(
-    (s) => s.status === "pending" || s.status === "returned"
-  ) ?? (getSteps(id).find((s) => s.status === "pending" || s.status === "returned") ?? null);
+    (s: ApprovalStep) => s.status === "pending" || s.status === "returned"
+  ) ?? null;
   const pendingStep = firstPendingStep?.requiredRole === user.role ? firstPendingStep : null;
 
   const stepMutation = useMutation({
@@ -179,7 +179,7 @@ export default function IndentDetail() {
       procurementMode?: string;
     }) => {
       setProcessing(true);
-      const res = await fetch(`/api/indents/${id}/approval-steps/${payload.stepNumber}`, {
+      const res = await fetch(`${BASE_URL}/indents/${id}/approval-steps/${payload.stepNumber}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
