@@ -24,8 +24,8 @@ export default function PurchaseOrderNew() {
     e.preventDefault();
     createPO.mutate({
       data: {
-        indentId: parseInt(form.indentId),
-        rateContractId: parseInt(form.rateContractId),
+        indentId: form.indentId,
+        rateContractId: form.rateContractId,
         quantity: parseInt(form.quantity),
         deliveryAddress: form.deliveryAddress,
         expectedDeliveryDate: form.expectedDeliveryDate,

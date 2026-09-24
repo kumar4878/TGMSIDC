@@ -27,8 +27,8 @@ export default function RateContractNew() {
     e.preventDefault();
     createRC.mutate({
       data: {
-        equipmentId: parseInt(form.equipmentId),
-        vendorId: parseInt(form.vendorId),
+        equipmentId: form.equipmentId,
+        vendorId: form.vendorId,
         unitPrice: parseFloat(form.unitPrice),
         gstRate: parseFloat(form.gstRate),
         warrantyYears: parseInt(form.warrantyYears),

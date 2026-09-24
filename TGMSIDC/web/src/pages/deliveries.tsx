@@ -93,7 +93,7 @@ export default function Deliveries() {
   function handleCreate() {
     if (!form.purchaseOrderId) return;
     createDelivery.mutate(
-      { data: { purchaseOrderId: parseInt(form.purchaseOrderId), dispatchDate: form.dispatchDate || undefined } as Parameters<typeof createDelivery.mutate>[0]["data"] },
+      { data: { purchaseOrderId: form.purchaseOrderId, dispatchDate: form.dispatchDate || undefined } as Parameters<typeof createDelivery.mutate>[0]["data"] },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListDeliveriesQueryKey({}) });

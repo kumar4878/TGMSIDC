@@ -28,7 +28,7 @@ export default function StockTransferNew() {
 
   const selectedItem = form.itemId ? mockEquipment.find(e => String(e.id) === form.itemId) : null;
   const stockPos = form.sourceId && form.itemId
-    ? mockStockPositions.find(p => p.facilityId === parseInt(form.sourceId) && p.itemId === parseInt(form.itemId))
+    ? mockStockPositions.find(p => String(p.facilityId) === form.sourceId && String(p.itemId) === form.itemId)
     : null;
 
   const sourceFacility = form.sourceId ? mockInstitutions.find(i => String(i.id) === form.sourceId) : null;

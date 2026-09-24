@@ -115,7 +115,7 @@ export default function IndentNew() {
 
   function getUnitRate(equipmentId: string): number {
     if (!equipmentId) return 0;
-    return getProductSpecs(parseInt(equipmentId))?.estimatedUnitRate ?? 0;
+    return getProductSpecs(equipmentId)?.estimatedUnitRate ?? 0;
   }
   function getItemTotal(li: LineItemDraft): number {
     return getUnitRate(li.equipmentId) * (parseInt(li.qty) || 0);
@@ -139,14 +139,14 @@ export default function IndentNew() {
     const firstItem = completeItems[0];
     const technicalRequirements = completeItems
       .map((li) => {
-        const eq = (equipment ?? []).find((e) => e.id === parseInt(li.equipmentId));
+        const eq = (equipment ?? []).find((e) => String(e.id) === li.equipmentId);
         return `${eq?.name ?? "?"} × ${li.qty} ${li.unit}: ${li.justification || "As per technical specification."}`;
       })
       .join("\n");
 
     const body: CreateIndentBody = {
-      facilityId: parseInt(form.facilityId),
-      equipmentId: parseInt(firstItem.equipmentId),
+      facilityId: form.facilityId,
+      equipmentId: firstItem.equipmentId,
       quantity: completeItems.reduce((s, li) => s + (parseInt(li.qty) || 0), 0),
       technicalRequirements,
       digitisedBy: form.digitisedBy,
@@ -155,8 +155,8 @@ export default function IndentNew() {
       remarks: form.remarks || undefined,
       lineItems: completeItems.map((li) => ({
         category: li.category,
-        equipmentId: parseInt(li.equipmentId),
-        equipmentName: (equipment ?? []).find((e) => e.id === parseInt(li.equipmentId))?.name ?? "",
+        equipmentId: li.equipmentId,
+        equipmentName: (equipment ?? []).find((e) => String(e.id) === li.equipmentId)?.name ?? "",
         qty: parseInt(li.qty),
         unit: li.unit,
         estimatedUnitRate: getUnitRate(li.equipmentId),
@@ -335,7 +335,7 @@ export default function IndentNew() {
               const unitRate = getUnitRate(li.equipmentId);
               const qty = parseInt(li.qty) || 0;
               const itemTotal = unitRate * qty;
-              const selectedEq = (equipment ?? []).find((e) => e.id === parseInt(li.equipmentId));
+              const selectedEq = (equipment ?? []).find((e) => String(e.id) === li.equipmentId);
 
               // Products in this category — searchable by name AND equipment code
               const filteredEquipment = (equipment ?? []).filter((e) => getProductCategory(e.id) === li.category);
@@ -512,7 +512,7 @@ export default function IndentNew() {
                   {/* Stock Snapshot Panel */}
                   {li.equipmentId && form.facilityId && (() => {
                     const sp = mockStockPositions.find(
-                      p => p.facilityId === parseInt(form.facilityId) && p.itemId === parseInt(li.equipmentId)
+                      p => String(p.facilityId) === form.facilityId && String(p.itemId) === li.equipmentId
                     );
                     if (!sp) return null;
                     const riskConfig: Record<string, { cls: string; label: string }> = {
@@ -628,7 +628,7 @@ export default function IndentNew() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Estimated Cost Summary</p>
                 <div className="space-y-1.5">
                   {completeItems.map((li, idx) => {
-                    const eq = (equipment ?? []).find((e) => e.id === parseInt(li.equipmentId));
+                    const eq = (equipment ?? []).find((e) => String(e.id) === li.equipmentId);
                     return (
                       <div key={li.localId} className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">

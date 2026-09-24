@@ -289,8 +289,8 @@ export default function RCCoverage() {
     e.preventDefault();
     createRC.mutate({
       data: {
-        equipmentId: parseInt(rcForm.equipmentId),
-        vendorId: parseInt(rcForm.vendorId),
+        equipmentId: rcForm.equipmentId,
+        vendorId: rcForm.vendorId,
         unitPrice: parseFloat(rcForm.unitPrice),
         gstRate: parseFloat(rcForm.gstRate),
         warrantyYears: parseInt(rcForm.warrantyYears),

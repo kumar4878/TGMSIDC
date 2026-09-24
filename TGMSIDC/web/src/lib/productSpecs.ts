@@ -744,21 +744,21 @@ const specsStore: Record<number, ProductTechSpecs> = {
   },
 };
 
-export function getProductSpecs(equipmentId: number): ProductTechSpecs | null {
-  return specsStore[equipmentId] ?? null;
+export function getProductSpecs(equipmentId: string | number): ProductTechSpecs | null {
+  return specsStore[Number(equipmentId)] ?? null;
 }
 
 export function updateProductSpecs(equipmentId: number, specs: ProductTechSpecs): void {
   specsStore[equipmentId] = specs;
 }
 
-export function getProductCategory(equipmentId: number): string {
-  return specsStore[equipmentId]?.productCategory ?? "medical_equipment";
+export function getProductCategory(equipmentId: string | number): string {
+  return specsStore[Number(equipmentId)]?.productCategory ?? "medical_equipment";
 }
 
 /** Quick one-line summary for inbox/table display */
-export function getSpecSummary(equipmentId: number): string {
-  const s = specsStore[equipmentId];
+export function getSpecSummary(equipmentId: string | number): string {
+  const s = specsStore[Number(equipmentId)];
   if (!s) return "";
   const perf = Object.entries(s.performance).slice(0, 2).map(([k, v]) => `${k}: ${v}`).join("; ");
   return perf;

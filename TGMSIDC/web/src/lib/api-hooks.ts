@@ -54,7 +54,7 @@ export const useListInstitutions = (_opts?: any) =>
 export const useCreateInstitution = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createInstitution,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createInstitution(data ?? rest),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["institutions"] }),
   });
 };
@@ -72,7 +72,7 @@ export const useGetVendorPerformance = (_opts?: any) =>
 export const useCreateVendor = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createVendor,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createVendor(data ?? rest),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["vendors"] }),
   });
 };
@@ -84,7 +84,7 @@ export const useListEquipment = (_opts?: any) =>
 export const useCreateEquipment = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createEquipment,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createEquipment(data ?? rest),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["equipment"] }),
   });
 };
@@ -108,7 +108,7 @@ export const useGetRateContract = (id: string, _opts?: any) =>
 export const useCreateRateContract = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createRateContract,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createRateContract(data ?? rest),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["rate-contracts"] }),
   });
 };
@@ -140,7 +140,7 @@ export const useGetIndent = (id: string, _opts?: any) =>
 export const useCreateIndent = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createIndent,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createIndent(data ?? rest),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["indents"] }),
   });
 };
@@ -188,7 +188,7 @@ export const useGetTender = (id: string, _opts?: any) =>
 export const useCreateTender = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createTender,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createTender(data ?? rest),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["tenders"] }),
   });
 };
@@ -220,7 +220,7 @@ export const useGetPurchaseOrder = (id: string, _opts?: any) =>
 export const useCreatePurchaseOrder = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createPurchaseOrder,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createPurchaseOrder(data ?? rest),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
       qc.invalidateQueries({ queryKey: ["indents"] });
@@ -271,7 +271,7 @@ export const useGetDelivery = (id: string, _opts?: any) =>
 export const useCreateDelivery = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.createDelivery,
+    mutationFn: ({ data, ...rest }: { data?: any; [k: string]: any }) => api.createDelivery(data ?? rest),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["deliveries"] });
       qc.invalidateQueries({ queryKey: ["purchase-orders"] });
